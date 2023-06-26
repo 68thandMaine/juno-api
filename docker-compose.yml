@@ -10,6 +10,12 @@ services:
       - "8000:8000"
     volumes:
       - .:/juno_api
+    environment:
+      - DATABASE_USERNAME=${DATABASE_USERNAME}
+      - DATABASE_PASSWORD=${DATABASE_PASSWORD}
+      - DATABASE_PORT=${DATABASE_PORT}
+      - DATABASE_URL=${DATABASE_URL}
+      - DATABASE_DIALECT=${DATABASE_DIALECT}
   postgres:
     image: postgres:15-alpine
     environment:
