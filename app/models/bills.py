@@ -1,7 +1,11 @@
 from sqlmodel import Field, SQLModel
+import sqlalchemy
 from datetime import date
 from typing import Optional
 from app.models.camel_case import CamelCaseModel
+
+
+metadata = sqlalchemy.MetaData()
 
 
 class Bill(CamelCaseModel, SQLModel, table=True):
