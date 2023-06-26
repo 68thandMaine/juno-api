@@ -36,6 +36,14 @@ optional = false
 python-versions = "!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*,!=3.5.*,!=3.6.*,>=2.7"
 
 [[package]]
+name = "commit-linter"
+version = "1.0.2"
+description = "simple git hooks scripts for a better git experience that enforces you to use the known commit messages conventions"
+category = "main"
+optional = false
+python-versions = ">=3.6"
+
+[[package]]
 name = "exceptiongroup"
 version = "1.1.1"
 description = "Backport of PEP 654 (exception groups)"
@@ -196,12 +204,13 @@ standard = ["colorama (>=0.4)", "httptools (>=0.5.0)", "python-dotenv (>=0.13)",
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.10"
-content-hash = "604552974affc3cadc3e600974c661aae9d04382ab2cbf314d788581e92b9aba"
+content-hash = "82b54d8eb423da92784839d84c258a09575a464993f97ff3e522c3677b6eda33"
 
 [metadata.files]
 anyio = []
 click = []
 colorama = []
+commit-linter = []
 exceptiongroup = []
 fastapi = []
 greenlet = []
