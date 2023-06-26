@@ -9,10 +9,11 @@ license = "MIT"
 python = "^3.10"
 fastapi = "^0.98.0"
 uvicorn = "^0.22.0"
-SQLAlchemy = "^2.0.17"
 psycopg2 = "^2.9.6"
 commit-linter = "^1.0.2"
 pydantic = "^1.10.9"
+sqlmodel = "^0.0.8"
+SQLAlchemy = "1.4.41"
 
 [tool.poetry.dev-dependencies]
 
