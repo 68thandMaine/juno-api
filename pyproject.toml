@@ -10,6 +10,7 @@ python = "^3.10"
 fastapi = "^0.98.0"
 uvicorn = "^0.22.0"
 SQLAlchemy = "^2.0.17"
+psycopg2 = "^2.9.6"
 
 [tool.poetry.dev-dependencies]
 

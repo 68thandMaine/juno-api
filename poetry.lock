@@ -90,6 +90,14 @@ optional = false
 python-versions = ">=3.5"
 
 [[package]]
+name = "psycopg2"
+version = "2.9.6"
+description = "psycopg2 - Python-PostgreSQL Database Adapter"
+category = "main"
+optional = false
+python-versions = ">=3.6"
+
+[[package]]
 name = "pydantic"
 version = "1.10.9"
 description = "Data validation and settings management using python type hints"
@@ -188,7 +196,7 @@ standard = ["colorama (>=0.4)", "httptools (>=0.5.0)", "python-dotenv (>=0.13)",
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.10"
-content-hash = "2d59a0d18ee12ad43bea68b2f363ed555f351f42290703d8afccdec0ba00628d"
+content-hash = "604552974affc3cadc3e600974c661aae9d04382ab2cbf314d788581e92b9aba"
 
 [metadata.files]
 anyio = []
@@ -199,6 +207,7 @@ fastapi = []
 greenlet = []
 h11 = []
 idna = []
+psycopg2 = []
 pydantic = []
 sniffio = []
 sqlalchemy = []
