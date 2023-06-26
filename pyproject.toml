@@ -1,15 +1,17 @@
 [tool.poetry]
-name = "juno_api"
+name = "juno-api"
 version = "0.1.0"
-description = ""
+description = "API and DB for Juno"
 authors = ["Your Name <you@example.com>"]
+license = "MIT"
 
 [tool.poetry.dependencies]
 python = "^3.10"
-fastapi = {extras = ["all"], version = "^0.70.1"}
+fastapi = "^0.98.0"
+uvicorn = "^0.22.0"
+SQLAlchemy = "^2.0.17"
 
 [tool.poetry.dev-dependencies]
-pytest = "^5.2"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

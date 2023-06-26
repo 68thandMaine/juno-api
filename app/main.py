@@ -1,14 +1,7 @@
-import logging
-import os
-from logging.config import dictConfig
-from dotenv import load_dotenv
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from juno_api.routes import accounts
 
-load_dotenv(".env")
-
-app = FastAPI()
+app = FastAPI(title="Juno API")
 
 app.add_middleware(
     CORSMiddleware,
@@ -18,4 +11,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(accounts.router)
+
+@app.get("/")
+def read_root():
+    return {"hello": "world"}
