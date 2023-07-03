@@ -3,16 +3,21 @@ from pydantic import BaseSettings, Field
 
 
 class Settings(BaseSettings):
-    def __init__(self):
-        db_username: str = Field(..., env="DATABASE_USERNAME")
-        db_password: str = Field(..., env="DATABASE_PASSWORD")
-        db_port: str = Field(..., env="DATABASE_PORT")
-        db_url: str = Field(..., env="DATABASE_URL")
-        db_dialect: str = Field(..., env="DATABASE_DIALECT")
+    db_username: str = os.getenv("DATABASE_USERNAME")
+    db_password: str = os.getenv("DATABASE_PASSWORD")
+    db_port: str = os.getenv("DATABASE_PORT")
+    db_url: str = os.getenv("DATABASE_URL")
+    db_dialect: str = os.getenv("DATABASE_DIALECT")
 
     @property
     def db_connection(self):
-        return f"{self.db_dialect}++asyncpg://{self.db_username}:{self.db_password}@{self.db_url}"
+        """the database connection to the Juno Postgres DB
+
+        Returns:
+            str: url string for the db connection
+        """
+
+        return f"{self.db_dialect}+asyncpg://{self.db_username}:{self.db_password}@{self.db_url}"
 
 
 settings = Settings()

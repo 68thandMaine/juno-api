@@ -17,6 +17,19 @@ test = ["anyio", "coverage[toml] (>=4.5)", "hypothesis (>=4.0)", "psutil (>=5.9)
 trio = ["trio (<0.22)"]
 
 [[package]]
+name = "asyncpg"
+version = "0.27.0"
+description = "An asyncio PostgreSQL driver"
+category = "main"
+optional = false
+python-versions = ">=3.7.0"
+
+[package.extras]
+dev = ["Cython (>=0.29.24,<0.30.0)", "pytest (>=6.0)", "Sphinx (>=4.1.2,<4.2.0)", "sphinxcontrib-asyncio (>=0.3.0,<0.4.0)", "sphinx-rtd-theme (>=0.5.2,<0.6.0)", "flake8 (>=5.0.4,<5.1.0)", "uvloop (>=0.15.3)"]
+docs = ["Sphinx (>=4.1.2,<4.2.0)", "sphinxcontrib-asyncio (>=0.3.0,<0.4.0)", "sphinx-rtd-theme (>=0.5.2,<0.6.0)"]
+test = ["flake8 (>=5.0.4,<5.1.0)", "uvloop (>=0.15.3)"]
+
+[[package]]
 name = "click"
 version = "8.1.3"
 description = "Composable command line interface toolkit"
@@ -107,7 +120,7 @@ python-versions = ">=3.6"
 
 [[package]]
 name = "pydantic"
-version = "1.10.9"
+version = "1.10.10"
 description = "Data validation and settings management using python type hints"
 category = "main"
 optional = false
@@ -119,6 +132,17 @@ typing-extensions = ">=4.2.0"
 [package.extras]
 dotenv = ["python-dotenv (>=0.10.4)"]
 email = ["email-validator (>=1.0.3)"]
+
+[[package]]
+name = "python-dotenv"
+version = "1.0.0"
+description = "Read key-value pairs from a .env file and set them as environment variables"
+category = "main"
+optional = false
+python-versions = ">=3.8"
+
+[package.extras]
+cli = ["click (>=5.0)"]
 
 [[package]]
 name = "sniffio"
@@ -200,7 +224,7 @@ full = ["httpx (>=0.22.0)", "itsdangerous", "jinja2", "python-multipart", "pyyam
 
 [[package]]
 name = "typing-extensions"
-version = "4.6.3"
+version = "4.7.1"
 description = "Backported and Experimental Type Hints for Python 3.7+"
 category = "main"
 optional = false
@@ -224,10 +248,11 @@ standard = ["colorama (>=0.4)", "httptools (>=0.5.0)", "python-dotenv (>=0.13)",
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.10"
-content-hash = "b066c49d73af23c49036acd5ef56ad2812be469049f512bfedaa9fd4ccdcc5f6"
+content-hash = "12d6b5e2ef7921d65be59ef81fc7d45bb94e6d40d52f8431bb23278570087ef8"
 
 [metadata.files]
 anyio = []
+asyncpg = []
 click = []
 colorama = []
 commit-linter = []
@@ -238,6 +263,7 @@ h11 = []
 idna = []
 psycopg2 = []
 pydantic = []
+python-dotenv = []
 sniffio = []
 sqlalchemy = []
 sqlalchemy2-stubs = []
