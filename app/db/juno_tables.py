@@ -1,20 +1,16 @@
-from sqlmodel import MetaData
+from sqlmodel import MetaData, create_engine
 from sqlalchemy.orm import sessionmaker
-from sqlalchemy.ext.asyncio import create_async_engine
+
+from sqlmodel.ext.asyncio.session import AsyncSession, AsyncEngine
+from sqlmodel import SQLModel
 from sqlalchemy.ext.asyncio.session import AsyncSession
 from ..settings import settings
-from app.models import bill, account
+from app.models import bill
 from app.lib.utils.log import logger
 
 
-engine = create_async_engine(settings.db_connection)
-SessionFactory = sessionmaker(
-    autocommit=False,
-    autoflush=False,
-    future=True,
-    bind=engine,
-    class_=AsyncSession,  # type: ignore
-)
+engine = AsyncEngine(create_engine(settings.db_connection, echo=True, future=True))
+SessionFactory = sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
 
 
 class JunoTables:
@@ -30,13 +26,10 @@ class JunoTables:
     def __init__(
         self,
         session_factory=SessionFactory,
-        table_model_metadata: tuple[MetaData, ...] = (
-            bill.bills_metadata,
-            account.accounts_metadata,
-        ),
+        # table_model_metadata: tuple[MetaData, ...] = (bill.juno_metadata,),
     ):
         self._session_factory = session_factory
-        self.table_model_metadata = table_model_metadata
+        # self.table_model_metadata = table_model_metadata
 
     async def __aenter__(self) -> AsyncSession:
         self.session = self._session_factory()
@@ -47,12 +40,19 @@ class JunoTables:
 
     async def create_tables(self):
         async with engine.begin() as conn:
+            await conn.run_sync(SQLModel.metadata.create_all)
+            # for metadata in self.table_model_metadata:
+            #     try:
+            #         await conn.run_sync(metadata.create_all)
+            #     except Exception as e:
+            #         # Handle or log the exception accordingly
+            #         logger(f"Error creating tables: {e}")
+
+    async def drop_tables(self):
+        async with engine.begin() as conn:
             for metadata in self.table_model_metadata:
-                try:
-                    await conn.run_sync(metadata.create_all)
-                except Exception as e:
-                    # Handle or log the exception accordingly
-                    logger(f"Error creating tables: {e}")
+                # Need to synchronously create tables to avoid asyncpg error
+                await conn.run_sync(metadata.drop_all)
 
     async def close(self):
         """Close the database connection."""
