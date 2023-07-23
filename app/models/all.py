@@ -5,13 +5,24 @@ from app.models.camel_case import CamelCaseModel
 from uuid import UUID, uuid4
 
 
-class Bill(CamelCaseModel, SQLModel, table=True):
-    id: int = Field(default=None, primary_key=True)
+class BaseTableModel(CamelCaseModel, SQLModel):
+    id: UUID = Field(default=uuid4, primary_key=True, index=True, unique=True)
+
+
+class Account(BaseTableModel, table=True):
+    archived: bool = Field(default=False)
     name: str
-    amount: int
+    type: str
+    value: float = 0.00
+
+
+class Bill(BaseTableModel, table=True):
+    id: UUID = Field(default=uuid4, primary_key=True, index=True, unique=True)
+    name: str
+    amount: float
     due_date: date
     frequency: str
-    # payment_method: Optional[UUID] = Field(default=None, foreign_key="account.id")
+    payment_method: Optional[int] = Field(default=None, foreign_key="account.id")
     recurring: Optional[bool] = None
     category: Optional[str] = None
     status: Optional[str] = None
@@ -22,7 +33,7 @@ class Bill(CamelCaseModel, SQLModel, table=True):
 
 class BillCreate(CamelCaseModel):
     name: str
-    amount: int
+    amount: float
     due_date: date
     frequency: str
     recurring: Optional[bool] = None

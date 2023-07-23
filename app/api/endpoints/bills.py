@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends
 from typing import List, Any
-from app.models.bill import Bill
+from app.models.all import Bill
 from app.api import deps
 from sqlalchemy.orm import Session
 from app import crud

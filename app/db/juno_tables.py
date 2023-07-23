@@ -4,8 +4,8 @@ from sqlalchemy.orm import sessionmaker
 from sqlmodel.ext.asyncio.session import AsyncSession, AsyncEngine
 from sqlmodel import SQLModel
 from sqlalchemy.ext.asyncio.session import AsyncSession
-from ..settings import settings
-from app.models import bill
+from app.core.config import settings
+from app.models.all import Bill
 from app.lib.utils.log import logger
 
 

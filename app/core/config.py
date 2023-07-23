@@ -17,7 +17,7 @@ class Settings(BaseSettings):
             str: url string for the db connection
         """
 
-        return f"{self.db_dialect}+asyncpg://{self.db_username}:{self.db_password}@{self.db_url}"
+        return f"{self.db_dialect}+asyncpg://{self.db_username}:{self.db_password}@{self.db_url}:{self.db_port}"
 
 
 settings = Settings()

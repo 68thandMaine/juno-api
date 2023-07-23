@@ -8,7 +8,7 @@ from uuid import UUID
 # from app.api.v1_routes import api_router
 
 from sqlmodel.ext.asyncio.session import AsyncSession
-from app.models.bill import Bill, BillCreate
+from app.models.all import Bill, BillCreate
 from sqlmodel import select
 from app.db.db import get_session, init_db
 
@@ -30,11 +30,6 @@ load_dotenv()
 
 # app = FastAPI(title="Juno API", lifespan=lifespan)
 app = FastAPI()
-
-
-@app.on_event("startup")
-async def on_startup():
-    await init_db()
 
 
 app.add_middleware(
