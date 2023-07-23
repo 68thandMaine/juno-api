@@ -6,7 +6,7 @@ from uuid import UUID, uuid4
 
 
 class BaseTableModel(CamelCaseModel, SQLModel):
-    id: UUID = Field(default=uuid4, primary_key=True, index=True, unique=True)
+    id: int = Field(default=None, primary_key=True, index=True, unique=True)
 
 
 class Account(BaseTableModel, table=True):
@@ -17,7 +17,6 @@ class Account(BaseTableModel, table=True):
 
 
 class Bill(BaseTableModel, table=True):
-    id: UUID = Field(default=uuid4, primary_key=True, index=True, unique=True)
     name: str
     amount: float
     due_date: date
