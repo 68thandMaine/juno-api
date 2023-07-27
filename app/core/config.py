@@ -19,5 +19,9 @@ class Settings(BaseSettings):
 
         return f"{self.db_dialect}+asyncpg://{self.db_username}:{self.db_password}@{self.db_url}:{self.db_port}"
 
+    @property
+    def test_db_connection(self):
+        return "sqlite:///./test.db"
+
 
 settings = Settings()

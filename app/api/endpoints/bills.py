@@ -15,6 +15,13 @@ async def get_bills(session: AsyncSession = Depends(get_session)):
     return bills
 
 
+@router.get("/{bill_id}", response_model=Bill, tags=["Bills"])
+async def get_bill(bill_id: int, session: AsyncSession = Depends(get_session)):
+    async with session.begin():
+        result = await session.get(Bill, bill_id)
+        return result
+
+
 @router.post("/", operation_id="add_bill", response_model=Bill)
 async def add_bill(bill: BillCreate, session: AsyncSession = Depends(get_session)):
     new_bill = Bill(

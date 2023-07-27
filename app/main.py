@@ -1,7 +1,7 @@
 from contextlib import asynccontextmanager
 from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
-from app.db.juno_tables import JunoTables
+
 from dotenv import load_dotenv
 from uuid import UUID
 
