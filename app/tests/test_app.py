@@ -1,23 +1,27 @@
-import pytest
 from fastapi.testclient import TestClient
+from unittest.mock import patch
+import pytest
 from app.main import app
 
-
-@pytest.fixture
-def test_client():
-    return TestClient(app)
+client = TestClient(app)
 
 
-def test_get_bills_empty(test_client):
-    response = test_client.get("/v1/bills")
+# Mock the get_session function for testing
+@patch("app.main.get_session")
+async def test_get_bills(mock_get_session):
+    # Mock the return value of the session object
+    mock_session = mock_get_session.return_value
+    mock_result = mock_session.exec.return_value
+    mock_result.scalars.return_value.all.return_value = ["Bill 1", "Bill 2"]
+
+    # Send a test request to the endpoint
+    response = client.get("/bills/")
+
     assert response.status_code == 200
-    assert response.json() == []
+    assert response.json() == ["Bill 1", "Bill 2"]
+
+    # Ensure that the function was called with the correct arguments
+    mock_get_session.assert_called_once()
 
 
-# def test_get_bills_with_data(test_client, session):
-#     # Assuming you have a test database with sample bills data in the "session" fixture
-
-#     response = test_client.get("/")
-#     assert response.status_code == 200
-#     assert len(response.json()) > 0
-#     # You can also add more specific checks based on your test data and expected results
+# Similar tests can be written for the other endpoints (get_bill and add_bill)

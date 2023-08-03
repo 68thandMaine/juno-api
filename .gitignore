@@ -1,2 +1,13 @@
-.env
-.vscode
+# Python Imports
+.env*
+.python-version
+
+# Binary files, compiled files, and directories to ignore
+bin/
+**/__pycache__/
+.pytest_cache/
+.DS_Store
+
+# IDE and editor-specific directories
+.idea/
+.vscode/
