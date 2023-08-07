@@ -25,18 +25,19 @@ class JunoTables:
 
     def __init__(
         self,
-        session_factory=SessionFactory,
+        session_factory=SessionFactory
         # table_model_metadata: tuple[MetaData, ...] = (bill.juno_metadata,),
     ):
-        self._session_factory = session_factory
+        logger(settings.db_connection)
+        self._session_factory = {}
         # self.table_model_metadata = table_model_metadata
 
-    async def __aenter__(self) -> AsyncSession:
-        self.session = self._session_factory()
-        return self.session
+    # async def __aenter__(self) -> AsyncSession:
+    #     self.session = self._session_factory()
+    #     return self.session
 
-    async def __aexit__(self, exc_type, exc_value, traceback):
-        return await self.session.close()
+    # async def __aexit__(self, exc_type, exc_value, traceback):
+    #     return await self.session.close()
 
     async def create_tables(self):
         async with engine.begin() as conn:

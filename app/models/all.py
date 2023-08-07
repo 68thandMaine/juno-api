@@ -1,41 +1,34 @@
-from sqlmodel import Field, SQLModel
 from datetime import date
 from typing import Optional
-from app.models.camel_case import CamelCaseModel
 from uuid import UUID, uuid4
+from sqlmodel import Field, SQLModel
+from app.models.camel_case import CamelCaseModel
+from decimal import Decimal
 
 
-class BaseTableModel(CamelCaseModel, SQLModel):
-    id: int = Field(default=None, primary_key=True, index=True, unique=True)
+class BaseTableModel(SQLModel, CamelCaseModel, table=True):
+    id: int = Field(primary_key=True, index=True, unique=True, default=1)
 
 
-class Account(BaseTableModel, table=True):
+class Account(BaseTableModel):
     archived: bool = Field(default=False)
     name: str
     type: str
-    value: float = 0.00
-
-
-class Bill(BaseTableModel, table=True):
-    name: str
-    amount: float
-    due_date: date
-    frequency: str
-    payment_method: Optional[int] = Field(default=None, foreign_key="account.id")
-    recurring: Optional[bool] = None
-    category: Optional[str] = None
-    status: Optional[str] = None
-    notes: Optional[str] = None
-    archived: bool = Field(default=False)
-    logo: Optional[str] = None
+    value: Decimal = 0.00
 
 
 class BillCreate(CamelCaseModel):
     name: str
-    amount: float
+    amount: Decimal
     due_date: date
     frequency: str
-    recurring: Optional[bool] = None
-    category: Optional[str] = None
-    status: Optional[str] = None
-    notes: Optional[str] = None
+    recurring: Optional[bool]
+    category: Optional[str]
+    status: Optional[str]
+    notes: Optional[str]
+
+
+class Bill(BaseTableModel, BillCreate):
+    payment_method: Optional[int] = Field(default=None, foreign_key="account.id")
+    archived: bool = Field(default=False)
+    logo: Optional[str] = None

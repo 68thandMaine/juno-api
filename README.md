@@ -18,6 +18,16 @@ After cloning the repo run `docker compose up --build` from the repo root.
 This will create the necessary containers for the API and database and start a docker
 environment for Juno. This will start a server on `localhost:8000`.
 
+### Package Management and virtual environment to develop in
+
+Python Poetry creates virtual environments that we can develop in. To create a virtual environment you will need the Poetry CLI.
+
+| Poetry CLI Command | Description                                                      |
+| ------------------ | ---------------------------------------------------------------- |
+| `poetry install`   | Installs project dependencies and creates a virtual environment. |
+| `poetry shell`     | Activates the virtual environment for use.                       |
+| `poetry exit`      | Exits the activated virtual environment.                         |
+
 ## Project Scripts
 
 After building the project, you can run the commands from the `Command` column in the table
