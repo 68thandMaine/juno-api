@@ -9,7 +9,7 @@ from sqlmodel import SQLModel
 from alembic import context
 
 # MODELS
-from app.models.all import Bill, Account
+from app.models.all import Bill
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

@@ -25,10 +25,11 @@ class JunoTables:
 
     def __init__(
         self,
-        session_factory=SessionFactory,
+        session_factory=SessionFactory
         # table_model_metadata: tuple[MetaData, ...] = (bill.juno_metadata,),
     ):
         self._session_factory = session_factory
+        self.session = self._session_factory()
         # self.table_model_metadata = table_model_metadata
 
     async def __aenter__(self) -> AsyncSession:
@@ -53,6 +54,9 @@ class JunoTables:
             for metadata in self.table_model_metadata:
                 # Need to synchronously create tables to avoid asyncpg error
                 await conn.run_sync(metadata.drop_all)
+
+    def get_settings(self):
+        return settings
 
     async def close(self):
         """Close the database connection."""

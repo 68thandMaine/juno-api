@@ -1,6 +1,6 @@
 [[package]]
 name = "alembic"
-version = "1.11.1"
+version = "1.11.2"
 description = "A database migration tool for SQLAlchemy."
 category = "main"
 optional = false
@@ -16,7 +16,7 @@ tz = ["python-dateutil"]
 
 [[package]]
 name = "anyio"
-version = "3.7.0"
+version = "3.7.1"
 description = "High level compatibility layer for multiple asynchronous event loop implementations"
 category = "main"
 optional = false
@@ -28,7 +28,7 @@ idna = ">=2.8"
 sniffio = ">=1.1"
 
 [package.extras]
-doc = ["packaging", "Sphinx (>=6.1.0)", "sphinx-rtd-theme", "sphinxcontrib-jquery", "sphinx-autodoc-typehints (>=1.2.0)"]
+doc = ["packaging", "sphinx", "sphinx-rtd-theme (>=1.2.2)", "sphinxcontrib-jquery", "sphinx-autodoc-typehints (>=1.2.0)"]
 test = ["anyio", "coverage[toml] (>=4.5)", "hypothesis (>=4.0)", "psutil (>=5.9)", "pytest (>=7.0)", "pytest-mock (>=3.6.1)", "trustme", "uvloop (>=0.17)", "mock (>=4)"]
 trio = ["trio (<0.22)"]
 
@@ -47,7 +47,7 @@ test = ["flake8 (>=5.0.4,<5.1.0)", "uvloop (>=0.15.3)"]
 
 [[package]]
 name = "certifi"
-version = "2023.5.7"
+version = "2023.7.22"
 description = "Python package for providing Mozilla's CA Bundle."
 category = "main"
 optional = false
@@ -55,7 +55,7 @@ python-versions = ">=3.6"
 
 [[package]]
 name = "click"
-version = "8.1.3"
+version = "8.1.6"
 description = "Composable command line interface toolkit"
 category = "main"
 optional = false
@@ -82,7 +82,7 @@ python-versions = ">=3.6"
 
 [[package]]
 name = "exceptiongroup"
-version = "1.1.1"
+version = "1.1.2"
 description = "Backport of PEP 654 (exception groups)"
 category = "main"
 optional = false
@@ -128,7 +128,7 @@ python-versions = ">=3.7"
 
 [[package]]
 name = "httpcore"
-version = "0.17.2"
+version = "0.17.3"
 description = "A minimal low-level HTTP client."
 category = "main"
 optional = false
@@ -176,7 +176,7 @@ python-versions = ">=3.5"
 name = "iniconfig"
 version = "2.0.0"
 description = "brain-dead simple config-ini parsing"
-category = "main"
+category = "dev"
 optional = false
 python-versions = ">=3.7"
 
@@ -208,7 +208,7 @@ python-versions = ">=3.7"
 name = "packaging"
 version = "23.1"
 description = "Core utilities for Python packages"
-category = "main"
+category = "dev"
 optional = false
 python-versions = ">=3.7"
 
@@ -216,7 +216,7 @@ python-versions = ">=3.7"
 name = "pluggy"
 version = "1.2.0"
 description = "plugin and hook calling mechanisms for python"
-category = "main"
+category = "dev"
 optional = false
 python-versions = ">=3.7"
 
@@ -226,7 +226,7 @@ testing = ["pytest", "pytest-benchmark"]
 
 [[package]]
 name = "psycopg2"
-version = "2.9.6"
+version = "2.9.7"
 description = "psycopg2 - Python-PostgreSQL Database Adapter"
 category = "main"
 optional = false
@@ -234,7 +234,7 @@ python-versions = ">=3.6"
 
 [[package]]
 name = "pydantic"
-version = "1.10.10"
+version = "1.10.12"
 description = "Data validation and settings management using python type hints"
 category = "main"
 optional = false
@@ -251,7 +251,7 @@ email = ["email-validator (>=1.0.3)"]
 name = "pytest"
 version = "7.4.0"
 description = "pytest: simple powerful testing with Python"
-category = "main"
+category = "dev"
 optional = false
 python-versions = ">=3.7"
 
@@ -268,9 +268,9 @@ testing = ["argcomplete", "attrs (>=19.2.0)", "hypothesis (>=3.56)", "mock", "no
 
 [[package]]
 name = "pytest-asyncio"
-version = "0.21.0"
+version = "0.21.1"
 description = "Pytest support for asyncio"
-category = "main"
+category = "dev"
 optional = false
 python-versions = ">=3.7"
 
@@ -334,7 +334,7 @@ sqlcipher = ["sqlcipher3-binary"]
 
 [[package]]
 name = "sqlalchemy2-stubs"
-version = "0.0.2a34"
+version = "0.0.2a35"
 description = "Typing Stubs for SQLAlchemy 1.4"
 category = "main"
 optional = false
@@ -374,7 +374,7 @@ full = ["httpx (>=0.22.0)", "itsdangerous", "jinja2", "python-multipart", "pyyam
 name = "tomli"
 version = "2.0.1"
 description = "A lil' TOML parser"
-category = "main"
+category = "dev"
 optional = false
 python-versions = ">=3.7"
 
@@ -404,7 +404,7 @@ standard = ["colorama (>=0.4)", "httptools (>=0.5.0)", "python-dotenv (>=0.13)",
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.10"
-content-hash = "214906a3d901e4e0e9a1336cf386d28967443fd9f311b3ce4014e2a4631eb288"
+content-hash = "24a919f998ec88cc8d36009b494d7b12244e4fd7848e1e991aaf59710dedb7bd"
 
 [metadata.files]
 alembic = []
