@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends
 from typing import List
-from app.models.all import Bill, BillCreate
+from app.models.all import Bill
 from sqlmodel.ext.asyncio.session import AsyncSession
 from sqlmodel import select
 from app.db.db import get_session, init_db
@@ -16,7 +16,7 @@ async def get_bills(session: AsyncSession = Depends(get_session)):
 
 
 @router.post("/", operation_id="add_bill", response_model=Bill)
-async def add_bill(bill: BillCreate, session: AsyncSession = Depends(get_session)):
+async def add_bill(bill: Bill, session: AsyncSession = Depends(get_session)):
     new_bill = Bill(
         name=bill.name,
         amount=bill.amount,
