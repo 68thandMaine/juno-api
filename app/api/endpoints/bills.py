@@ -31,3 +31,18 @@ async def add_bill(bill: Bill, session: AsyncSession = Depends(get_session)):
     await session.commit()
     await session.refresh(new_bill)
     return new_bill
+
+
+@router.put("/update/{id}", operation_id="update_bill")
+async def update_bill(bill: Bill, session: AsyncSession = Depends(get_session)):
+    new_bill = Bill(**bill)
+    print(new_bill)
+    statement = select(Bill).where(Bill.id == bill.id)
+    results = session.exec(statement)
+    bill = results.one()
+    print("db bill", bill)
+    bill = new_bill
+    session.add(bill)
+    session.commit()
+    session.refresh(bill)
+    print("updated bill", bill)
