@@ -46,13 +46,3 @@ async def update_bill(bill: Bill, session: AsyncSession = Depends(get_session)):
     session.commit()
     session.refresh(bill)
     print("updated bill", bill)
-
-
-@router.delete("/delete/{id}")
-async def delete_bill(bill_id: any, session: AsyncSession = Depends(get_session)):
-    bill = session.get(Bill, bill_id)
-    if not bill:
-        raise HTTPException(status_code=404, detail="Bill not found")
-    session.delete(bill)
-    session.commit()
-    return {"ok": True}

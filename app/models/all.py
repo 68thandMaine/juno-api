@@ -13,7 +13,7 @@ class BillBase(CamelCaseModel, SQLModel):
     frequency: str
     recurring: Optional[bool]
     category: Optional[str]
-    status: Optional[str]
+    status: Optional[int]
     notes: Optional[str]
     # payment_method: UUID = Field(default=None, foreign_key="account.id")
     archived: Optional[bool] = Field(default=False)
