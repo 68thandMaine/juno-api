@@ -1,29 +1,30 @@
 [tool.poetry]
-name = "juno_api"
+name = "juno-api"
 version = "0.1.0"
-description = "The API and DB for juno"
-authors = ["Chris Rudnicky 68thandMaine@gmail.com"]
+description = ""
+authors = ["Your Name <you@example.com>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-alembic = "^1.11.1"
-asyncpg = "^0.27.0"
-commit-linter = "^1.0.2"
-fastapi = "^0.98.0"
-httpx = "^0.24.1"
-psycopg2 = "^2.9.6"
-pydantic = "^1.10.9"
-python = "^3.10"
+python = "^3.12.0"
+alembic = "^1.13.1"
+fastapi = "^0.108.0"
+httpx = "^0.26.0"
+psycopg2 = "^2.9.9"
+pydantic = "^2.5.3"
 python-dotenv = "^1.0.0"
-sqlmodel = "^0.0.8"
-SQLAlchemy = "1.4.41"
-uvicorn = "^0.22.0"
-anyio = "^3.7.1"
+sqlmodel = "^0.0.14"
+SQLAlchemy = "^2.0.23"
+uvicorn = "^0.25.0"
+anyio = "^4.2.0"
+asyncpg = "^0.29.0"
+pydantic-settings = "^2.1.0"
 
-[tool.poetry.dev-dependencies]
-pytest = "^7.4.0"
-pytest-asyncio = "^0.21.0"
+[tool.poetry.group.dev.dependencies]
+pytest = "^7.4.3"
+pytest-asyncio = "^0.23.2"
+black = "^23.12.1"
 
 [build-system]
-requires = ["poetry-core>=1.0.0"]
+requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
