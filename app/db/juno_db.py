@@ -1,36 +1,39 @@
 from sqlmodel import MetaData, create_engine
 from sqlalchemy.orm import sessionmaker
 
-from sqlmodel.ext.asyncio.session import AsyncSession, AsyncEngine
+from sqlalchemy.ext.asyncio import create_async_engine
 from sqlmodel import SQLModel
 from sqlalchemy.ext.asyncio.session import AsyncSession
 from app.core.config import settings
-from app.models.all import Bill
+from app.models.all import Bill, Category
 from app.lib.utils.log import logger
+from sys import modules
+
+db_connection_str = settings.db_test_connection if 'pytest' in modules else settings.db_connection
 
 
-engine = AsyncEngine(create_engine(settings.db_connection, echo=True, future=True))
-SessionFactory = sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
+async_engine = create_async_engine(
+   db_connection_str,
+   echo=True,
+   future=True
+)
+SessionFactory = sessionmaker(async_engine, class_=AsyncSession, expire_on_commit=False)
 
 
-class JunoTables:
+class JunoDB:
     """The Juno Database management class which can be used
     with an async context manager to create database sessions."""
 
     __slots__ = (
         "_session_factory",
         "session",
-        "table_model_metadata",
     )
 
     def __init__(
         self,
-        session_factory=SessionFactory
-        # table_model_metadata: tuple[MetaData, ...] = (bill.juno_metadata,),
-    ):
+        session_factory=SessionFactory,
+    ) -> None:
         self._session_factory = session_factory
-        self.session = self._session_factory()
-        # self.table_model_metadata = table_model_metadata
 
     async def __aenter__(self) -> AsyncSession:
         self.session = self._session_factory()
@@ -40,24 +43,22 @@ class JunoTables:
         return await self.session.close()
 
     async def create_tables(self):
-        async with engine.begin() as conn:
+        async with async_engine.begin() as conn:
             await conn.run_sync(SQLModel.metadata.create_all)
-            # for metadata in self.table_model_metadata:
-            #     try:
-            #         await conn.run_sync(metadata.create_all)
-            #     except Exception as e:
-            #         # Handle or log the exception accordingly
-            #         logger(f"Error creating tables: {e}")
 
     async def drop_tables(self):
-        async with engine.begin() as conn:
+        async with async_engine.begin() as conn:
             for metadata in self.table_model_metadata:
                 # Need to synchronously create tables to avoid asyncpg error
                 await conn.run_sync(metadata.drop_all)
 
-    def get_settings(self):
-        return settings
 
     async def close(self):
         """Close the database connection."""
-        return await engine.dispose()
+        return await async_engine.dispose()
+
+
+async def get_session() -> AsyncSession:
+    async_session = SessionFactory()
+    async with async_session() as session:
+        yield session

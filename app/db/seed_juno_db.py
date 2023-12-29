@@ -1,67 +1,59 @@
+import re
 import asyncio
 from anyio import Path
 from app.lib.utils.log import logger
-from app.db.juno_tables import JunoTables
-
+from app.db.juno_db import JunoDB, get_session
 from csv import DictReader
 from typing import List
-from app.models.all import Bill
+from app.models.all import Bill, Category
 
-
-file_path = Path("./app/db/example-data.csv")
+ENTITY_CSV_PATH = Path("./app/db/seed_data/bill_seed.csv")
+CATEGORY_CSV_PATH = Path('./app/db/seed_data/category_seed.csv')
 
 
 class InsensitiveDictReader(DictReader):
-    """
-    This class overrides the fieldnames property in order to strip whitespace from fieldnames
-    and to make all fieldnames lower case.
-    """
-
     @property
     def fieldnames(self):
         fieldnames = super(InsensitiveDictReader, self).fieldnames
-
-        if fieldnames is None:
-            return None
-
-        return [self.mutate_field(field) for field in fieldnames]
+        return [self.mutate_field(field) for field in fieldnames] if fieldnames else None
 
     def mutate_field(self, field):
         return field.strip().lower()
 
 
-def csv_rows():
-    """Synchronously open example CSVs and return rows as dicts."""
-    with open(file_path, encoding="utf-8-sig") as seed_file:
+async def read_csv_rows(file_path):
+    if not await file_path.exists():
+        raise FileNotFoundError(f"CSV file not found: {file_path}")
+
+    with open(file_path, 'r', encoding='utf-8-sig') as seed_file:
         reader = InsensitiveDictReader(seed_file)
         return [row for row in reader]
 
 
-async def seed_bill_rows(model_data: List[Bill]):
-    async with JunoTables() as session:
+async def seed_model_rows(model_class, model_data):
+    async with JunoDB() as session:
         try:
             for model in model_data:
-                new_bill = Bill(**model)
-                session.add(new_bill)
-                await session.commit()
-                await session.refresh(new_bill)
+                model = {key: float(value) if re.match(r'^[-+]?\d*\.?\d+$', value) else value for key, value in model.items()}
+                new_model = model_class(**model)
+                session.add(new_model)
+            await session.commit()
+            await session.refresh(new_model)
         except Exception as e:
-            logger(f"Seeding failed: \n\n{e}")
+            logger(f"Seeding failed for {model_class.__name__}: {e}")
 
-
-async def read_seed_rows():
-    if not await file_path.exists():
-        raise FileNotFoundError("example data CSV not found.")
-
-    rows = await asyncio.to_thread(csv_rows)
-    return rows
 
 
 async def seed_db():
-    entity_rows = await read_seed_rows()
-    logger(f"Creating {len(entity_rows)}s bills")
-    await seed_bill_rows(entity_rows)
+    db = JunoDB()
+    await db.create_tables()
+    entity_rows = await read_csv_rows(ENTITY_CSV_PATH)
+    category_rows = await read_csv_rows(CATEGORY_CSV_PATH)
+
+    await seed_model_rows(Bill, entity_rows)
+    await seed_model_rows(Category, category_rows)
 
 
-if __name__ == "__main__":
+
+if __name__ == "__main__":    
     asyncio.run(seed_db())
