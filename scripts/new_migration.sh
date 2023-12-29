@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Prompt the user for their name
+# Prompt the user for a breif description of the changes
 echo "Describe the change in five words or less?"
 read description
 
