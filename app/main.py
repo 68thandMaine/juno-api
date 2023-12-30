@@ -1,13 +1,12 @@
-from contextlib import asynccontextmanager
-from fastapi import FastAPI, Depends
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
 from uuid import UUID
 
+
 from app.api.v1_routes import api_router
 
 load_dotenv()
-
 
 app = FastAPI(title="Juno API")
 

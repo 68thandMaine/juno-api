@@ -1,4 +1,4 @@
-FROM python:3.10.11-bullseye as base 
+FROM python:3.12.1-bullseye as base 
 WORKDIR  /juno_api
 
 COPY /pyproject.toml /juno_api
