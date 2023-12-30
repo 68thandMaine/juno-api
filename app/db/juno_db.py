@@ -7,13 +7,13 @@ from sqlalchemy.ext.asyncio.session import AsyncSession
 from app.core.config import settings
 from app.models.all import Bill, Category
 from app.lib.utils.log import logger
-from sys import modules
 
-db_connection_str = settings.db_test_connection if 'pytest' in modules else settings.db_connection
+
+
 
 
 async_engine = create_async_engine(
-   db_connection_str,
+   settings.db_connection,
    echo=True,
    future=True
 )
@@ -34,7 +34,6 @@ class JunoDB:
         session_factory=SessionFactory,
     ) -> None:
         self._session_factory = session_factory
-
     async def __aenter__(self) -> AsyncSession:
         self.session = self._session_factory()
         return self.session
