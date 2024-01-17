@@ -19,10 +19,10 @@ services:
   postgres:
     image: postgres:15-alpine
     environment:
-      - POSTGRES_DB=juno_db_dev
+      - POSTGRES_DB=juno_db
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
-      - DATABASE_URL=postgresql+asyncpg://postgres:postgres@postgres:5432/juno_db_dev
+      - DATABASE_URL=postgresql+asyncpg://postgres:postgres@postgres:5432/juno_db
     volumes:
       - postgres_data:/var/lib/postgresql/data/
       - ./docker-entrypoint-initdb.d/init-test-database.sh:/docker-entrypoint-initdb.d/init-test-database.sh
