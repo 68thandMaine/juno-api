@@ -1,36 +1,56 @@
 import asyncio
-import json
-import os
 from typing import Generator
-
+import psycopg2
 import pytest
 import pytest_asyncio
 from httpx import AsyncClient
-from sqlmodel import SQLModel
 from app.main import app
-from app.core.config import settings
-from app.db.juno_db import async_engine, JunoDB
+from app.db.juno_db import get_session
 from sqlmodel.ext.asyncio.session import AsyncSession
-from sqlalchemy.orm import sessionmaker
+from app.core.config import settings
+
 
 @pytest.fixture(scope="session")
-def event_loop(request) -> Generator:
-  loop = asyncio.get_event_loop_policy().new_event_loop()
-  yield loop
-  loop.close()
+def event_loop():
+    loop = asyncio.get_event_loop_policy().new_event_loop()
+    yield loop
+    loop.close()
 
 
 @pytest_asyncio.fixture
 async def async_client():
-  async with AsyncClient(
-    app = app,
-    base_url=f"http://localhost:8080/api/v1"
-  ) as client:
-    yield client
+    async with AsyncClient(app=app, base_url=f"http://localhost:8000/v1/") as client:
+        yield client
 
-@pytest_asyncio.fixture
+
+@pytest_asyncio.fixture(scope="function")
 async def async_session() -> AsyncSession:
-  db = JunoDB()
-  print(settings.db_connection)
-  await db.create_tables()
-  yield db
+    return get_session()
+
+
+@pytest.fixture(scope="session", autouse=True)
+def cleanup_test_database(request):
+    connection = psycopg2.connect(
+        dbname="juno_db_test",
+        user=settings.db_username,
+        password=settings.db_password,
+        host=settings.db_username,
+        port=settings.db_port,
+    )
+
+    # Create a cursor
+    cursor = connection.cursor()
+
+    # Yield the connection and cursor to the test function
+    yield connection, cursor
+
+    # Cleanup: Delete entries from multiple tables
+    tables_to_cleanup = ["bill", "category", "payment", "recurringbill"]
+
+    for table in tables_to_cleanup:
+        cursor.execute(f"DELETE FROM {table}")
+
+    # Commit the changes and close the cursor and connection
+    connection.commit()
+    cursor.close()
+    connection.close()

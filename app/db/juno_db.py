@@ -5,18 +5,9 @@ from sqlalchemy.ext.asyncio import create_async_engine
 from sqlmodel import SQLModel
 from sqlalchemy.ext.asyncio.session import AsyncSession
 from app.core.config import settings
-from app.models.all import Bill, Category
-from app.lib.utils.log import logger
 
 
-
-
-
-async_engine = create_async_engine(
-   settings.db_connection,
-   echo=True,
-   future=True
-)
+async_engine = create_async_engine(settings.db_connection, echo=True, future=True)
 SessionFactory = sessionmaker(async_engine, class_=AsyncSession, expire_on_commit=False)
 
 
@@ -34,6 +25,7 @@ class JunoDB:
         session_factory=SessionFactory,
     ) -> None:
         self._session_factory = session_factory
+
     async def __aenter__(self) -> AsyncSession:
         self.session = self._session_factory()
         return self.session
@@ -51,7 +43,6 @@ class JunoDB:
                 # Need to synchronously create tables to avoid asyncpg error
                 await conn.run_sync(metadata.drop_all)
 
-
     async def close(self):
         """Close the database connection."""
         return await async_engine.dispose()
@@ -59,5 +50,5 @@ class JunoDB:
 
 async def get_session() -> AsyncSession:
     async_session = SessionFactory()
-    async with async_session() as session:
+    async with async_session as session:
         yield session

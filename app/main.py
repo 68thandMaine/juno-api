@@ -20,3 +20,8 @@ app.add_middleware(
 )
 
 app.include_router(api_router)
+
+
+@app.get("/v1/")
+def test_root():
+    return "HELLO"

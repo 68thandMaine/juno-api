@@ -35,6 +35,6 @@ class CamelCaseModel(BaseModel):
     ```
     """
 
-    class Config:
+    class ConfigDict:
         alias_generator = camel_case
         allow_population_by_field_name = True
