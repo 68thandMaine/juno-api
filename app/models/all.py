@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import datetime
 from typing import Optional
 from uuid import UUID, uuid4
 from sqlmodel import Field, SQLModel
@@ -13,11 +13,12 @@ class IdBase(CamelCaseModel, SQLModel):
         nullable=False,
     )
 
+
 class Bill(IdBase, table=True):
     name: str
     amount: int
-    due_date: str
-    category: Optional[str]
+    due_date: datetime
+    category: Optional[UUID] = Field(default=None, foreign_key="category.id")
     status: Optional[int]
     # notes: Optional[str]
     # payment_method: UUID = Field(default=None, foreign_key="account.id")
@@ -27,12 +28,14 @@ class Bill(IdBase, table=True):
 
 class Payment(IdBase, table=True):
     amount: Decimal
-    payment_date: date
+    payment_date: datetime
     bill_id: UUID = Field(default=None, foreign_key="bill.id")
+
 
 class RecurringBill(IdBase, table=True):
     bill_id: UUID = Field(default=None, foreign_key="bill.id")
-    recurrence_interval: date
+    recurrence_interval: datetime
+
 
 class Category(IdBase, table=True):
     name: str

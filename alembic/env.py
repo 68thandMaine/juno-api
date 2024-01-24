@@ -35,16 +35,17 @@ def do_run_migrations(connection: Connection) -> None:
     context.configure(connection=connection, target_metadata=target_metadata)
     with context.begin_transaction():
         context.run_migrations()
-    
+
 
 async def run_async_migrations(engine: Engine, engine_name: str) -> None:
     async with engine.connect() as connection:
         await connection.run_sync(do_run_migrations)
     await engine.dispose()
 
+
 async def run_migrations_online() -> None:
     engines = {}
-    
+
     for name in re.split(r",\s*", db_names):
         engines[name] = config = {}
         config["engine"] = async_engine_from_config(
@@ -52,7 +53,7 @@ async def run_migrations_online() -> None:
             prefix="sqlalchemy.",
             poolclass=pool.NullPool,
         )
-        await run_async_migrations(config['engine'], name)
+        await run_async_migrations(config["engine"], name)
+
 
 asyncio.run(run_migrations_online())
-    
