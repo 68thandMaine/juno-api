@@ -1,10 +1,10 @@
-import re
 import asyncio
-from anyio import Path
-from app.lib.utils.log import logger
-from app.db.juno_db import JunoDB, get_session
+import re
 from csv import DictReader
-from typing import List
+
+from anyio import Path
+
+from app.db.juno_db import JunoDB
 from app.models.all import Bill, Category
 
 ENTITY_CSV_PATH = Path("./app/db/seed_data/bill_seed.csv")
@@ -46,7 +46,6 @@ async def seed_model_rows(model_class, model_data):
             await session.refresh(new_model)
         except Exception as e:
             raise Exception(e)
-            logger(f"Seeding failed for {model_class.__name__}: {e}")
 
 
 async def seed_db():
@@ -55,7 +54,7 @@ async def seed_db():
     entity_rows = await read_csv_rows(ENTITY_CSV_PATH)
     category_rows = await read_csv_rows(CATEGORY_CSV_PATH)
 
-    # await seed_model_rows(Bill, entity_rows)
+    await seed_model_rows(Bill, entity_rows)
     await seed_model_rows(Category, category_rows)
 
 

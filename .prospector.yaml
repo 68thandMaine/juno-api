@@ -1,0 +1,6 @@
+# .prospector.yml
+
+pylint:
+  disable:
+    - astroid-error
+    - wrong-import-position

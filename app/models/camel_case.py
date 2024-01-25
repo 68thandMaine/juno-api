@@ -1,4 +1,5 @@
 from pydantic import BaseModel
+
 from app.lib.utils.str_utils import camel_case
 
 

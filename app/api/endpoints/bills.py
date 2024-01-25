@@ -1,12 +1,11 @@
-from uuid import UUID
 from datetime import datetime
-from fastapi import APIRouter, Depends
-from typing import List
-from app.models.all import Bill, Category
-from sqlmodel.ext.asyncio.session import AsyncSession
-from sqlmodel import select
-from app.db.juno_db import get_session
 
+from fastapi import APIRouter, Depends
+from sqlmodel import select
+from sqlmodel.ext.asyncio.session import AsyncSession
+
+from app.db.juno_db import get_session
+from app.models.all import Bill
 
 router = APIRouter(prefix="/bills")
 
@@ -22,30 +21,11 @@ async def get_bills(session: AsyncSession = Depends(get_session)):
 
 @router.post("/", operation_id="add_bill", response_model=Bill)
 async def add_bill(bill: Bill, session: AsyncSession = Depends(get_session)):
-    # category_id = bill.category
-
-    try:
-        pass
-        # statement = select(Category).where(Category.id == category_id)
-        # results = await session.execute(statement)
-        # category = results.scalar_one_or_none()
-        # if not category:
-        # create a new category
-        # new_category = Category(*bill.category)
-        # await session.add(new_category)
-        # await session.commit()
-        # await session.refresh(new_category)
-        # category = new_category
-    except Exception as e:
-        pass
-        # cause = e.orig.__context__.__cause__
-        # raise AttributeError(e)
-
     try:
         new_bill = Bill(
             name=bill.name,
             amount=bill.amount,
-            due_date=datetime.fromisoformat(bill.due_date),
+            due_date=bill.due_date,
             category=bill.category,
             status=bill.status,
         )
