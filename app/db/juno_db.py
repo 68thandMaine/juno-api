@@ -1,11 +1,11 @@
-from sqlmodel import MetaData, create_engine
-from sqlalchemy.orm import sessionmaker
+from typing import AsyncGenerator
 
 from sqlalchemy.ext.asyncio import create_async_engine
-from sqlmodel import SQLModel
 from sqlalchemy.ext.asyncio.session import AsyncSession
-from app.core.config import settings
+from sqlalchemy.orm import sessionmaker
+from sqlmodel import SQLModel
 
+from app.core.config import settings
 
 async_engine = create_async_engine(settings.db_connection, echo=True, future=True)
 SessionFactory = sessionmaker(async_engine, class_=AsyncSession, expire_on_commit=False)
@@ -48,7 +48,7 @@ class JunoDB:
         return await async_engine.dispose()
 
 
-async def get_session() -> AsyncSession:
+async def get_session() -> AsyncGenerator:
     async_session = SessionFactory()
     async with async_session as session:
         yield session

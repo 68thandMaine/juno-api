@@ -1,9 +1,11 @@
 from datetime import datetime
+from decimal import Decimal
 from typing import Optional
 from uuid import UUID, uuid4
+
 from sqlmodel import Field, SQLModel
+
 from app.models.camel_case import CamelCaseModel
-from decimal import Decimal
 
 
 class IdBase(CamelCaseModel, SQLModel):

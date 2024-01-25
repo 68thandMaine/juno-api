@@ -38,3 +38,9 @@ below from the root of this project.
 | `bash scripts/connect_to_postgres`       | This will connect to the PostgreSQL container. Once you have run this command, you can connect to the database by running `psql -U postgres -d postgres`.            |
 | `bash scripts/new_migration`             | This can be run after making changes that affect the database. It will prompt you for a short description of the change that the migration file will use for a name. |
 | `bash scripts/run_most_recent_migration` | Applies the latest database migration. Typically, this is run after the `new_migration` script. Could probably run this after an initial download                    |
+
+## Documentation
+
+The development of Juno is heavily documented on Confluence. Here are some articles:
+
+- [Creating the test environment infrastructure](https://68thandmaine.atlassian.net/wiki/x/NwA6)

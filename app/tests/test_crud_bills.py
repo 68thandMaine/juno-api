@@ -1,12 +1,14 @@
-import datetime
-import pytest
 import copy
+import datetime
 from unittest.mock import MagicMock
+
+import pytest
 from httpx import AsyncClient
 from sqlmodel.ext.asyncio.session import AsyncSession
-from app.models.all import Bill
-from app.core.config import settings
+
 from app.api.endpoints.bills import add_bill
+from app.core.config import settings
+from app.models.all import Bill
 
 bill_for_tests = {
     "name": "TEST_BILL",
