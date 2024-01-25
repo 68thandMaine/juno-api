@@ -71,7 +71,6 @@ async def test_get_bills_returns_a_200_when_successful(async_client: AsyncClient
     assert result.status_code == 200
 
 
-@pytest.mark.runonly
 @pytest.mark.asyncio
 async def test_update_bill_returns_bill_with_updated_data(
     async_client: AsyncClient, setup_fake_bill
@@ -80,7 +79,7 @@ async def test_update_bill_returns_bill_with_updated_data(
     new_name = "Verizon"
     bill = created_bill.json()
     bill["name"] = new_name
-    id = bill["id"]
-    result = await async_client.put(f"bills/update/{id}", json=bill)
+    bill_id = bill["id"]
+    result = await async_client.put(f"bills/update/{bill_id}", json=bill)
     assert result.status_code == 200
     assert result.json()["name"] == new_name

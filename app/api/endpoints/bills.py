@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import List
 
 from fastapi import APIRouter, Depends
 from sqlmodel import select
@@ -11,7 +12,7 @@ router = APIRouter(prefix="/bills")
 
 
 @router.get("/", operation_id="get_bills")
-async def get_bills(session: AsyncSession = Depends(get_session)):
+async def get_bills(session: AsyncSession = Depends(get_session)) -> List[Bill]:
     result = await session.execute(select(Bill))
     bills = result.scalars().all()
     if not bills:
@@ -25,7 +26,7 @@ async def add_bill(bill: Bill, session: AsyncSession = Depends(get_session)):
         new_bill = Bill(
             name=bill.name,
             amount=bill.amount,
-            due_date=bill.due_date,
+            due_date=datetime.fromisoformat(bill.due_date),
             category=bill.category,
             status=bill.status,
         )
