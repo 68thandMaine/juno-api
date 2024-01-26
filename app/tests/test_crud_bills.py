@@ -24,28 +24,47 @@ def setup_fake_bill():
 
 
 @pytest.mark.asyncio
+async def test_add_bill_returns_200_upon_successful_completion(
+    async_client: AsyncClient,
+    setup_fake_bill,
+):
+    fake_bill = setup_fake_bill()
+    result = await async_client.post("bills/", json=fake_bill)
+    assert result.status_code == 200
+
+
+@pytest.mark.asyncio
 @pytest.mark.parametrize(
     "overrides, expected_exception",
-    [
-        ({"due_date": "DATE"}, ("AttributeError", "Invalid isoformat string: 'DATE'")),
-        ({"category": "uuid"}, ("AttributeError", "invalid UUID")),
-        ({"category": None}, None),
-    ],
+    [({"due_date": "DATE"}, ("AttributeError", "Invalid isoformat string: 'DATE'"))],
 )
-async def test_add_bill(
-    async_client: AsyncClient, mocker, setup_fake_bill, overrides, expected_exception
+async def test_add_bill_throws_error_if_date_is_incorrect(
+    async_client: AsyncClient, expected_exception, setup_fake_bill, overrides
 ):
     fake_bill = setup_fake_bill(overrides)
+    with pytest.raises(Exception) as excinfo:
+        await async_client.post("bills/", json=fake_bill)
+    result = str(excinfo)
 
-    if expected_exception:
-        with pytest.raises(Exception) as excinfo:
-            await async_client.post("bills/", json=fake_bill)
-        result = str(excinfo)
-        error_type, error_msg = expected_exception
-        assert error_type in result and error_msg in result
-    else:
-        result = await async_client.post("bills/", json=fake_bill)
-        assert result.status_code == 200
+    error_type, error_msg = expected_exception
+    assert error_type in result and error_msg in result
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    "overrides, expected_exception",
+    [({"category": "uuid"}, ("AttributeError", "invalid UUID"))],
+)
+async def test_add_bill_throws_error_if_category_uuid_is_incorrect(
+    async_client: AsyncClient, expected_exception, setup_fake_bill, overrides
+):
+    fake_bill = setup_fake_bill(overrides)
+    with pytest.raises(Exception) as excinfo:
+        await async_client.post("bills/", json=fake_bill)
+    result = str(excinfo)
+
+    error_type, error_msg = expected_exception
+    assert error_type in result and error_msg in result
 
 
 @pytest.mark.asyncio

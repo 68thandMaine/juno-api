@@ -7,7 +7,7 @@ from app.models.all import Category
 
 
 @pytest.mark.asyncio
-async def test_get_cateogories_returns_empty_list(async_client: AsyncClient, mocker):
+async def test_get_categories_returns_empty_list(async_client: AsyncClient, mocker):
     mock = mocker.patch.object(async_client, "get", return_value=MagicMock())
     mock.return_value = []
     result = await async_client.get("category/")
