@@ -47,7 +47,7 @@ def cleanup_test_database(request):
     yield connection, cursor
 
     # Cleanup: Delete entries from multiple tables
-    tables_to_cleanup = ["bill", "category", "payment", "recurringbill"]
+    tables_to_cleanup = ["payment", "recurringbill", "bill", "category"]
 
     for table in tables_to_cleanup:
         cursor.execute(f"DELETE FROM {table}")

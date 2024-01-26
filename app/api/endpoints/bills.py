@@ -43,6 +43,7 @@ async def update_bill(bill: Bill, session: AsyncSession = Depends(get_session)):
     statement = select(Bill).where(Bill.id == bill.id)
     db_result = await session.execute(statement)
     bill_to_update = db_result.scalar_one()
+
     for k, v in bill.model_dump().items():
         if k == "due_date":
             v = datetime.fromisoformat(v)
@@ -51,4 +52,5 @@ async def update_bill(bill: Bill, session: AsyncSession = Depends(get_session)):
     session.add(bill_to_update)
     await session.commit()
     await session.refresh(bill_to_update)
+
     return bill_to_update
