@@ -44,3 +44,4 @@ below from the root of this project.
 The development of Juno is heavily documented on Confluence. Here are some articles:
 
 - [Creating the test environment infrastructure](https://68thandmaine.atlassian.net/wiki/x/NwA6)
+- [Dockerizing the Juno API and Database](https://68thandmaine.atlassian.net/wiki/x/AoB7)
