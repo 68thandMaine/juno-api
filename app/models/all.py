@@ -2,7 +2,6 @@ from datetime import datetime
 from decimal import Decimal
 from typing import Optional
 from uuid import UUID, uuid4
-
 from sqlmodel import Field, SQLModel
 
 from app.models.camel_case import CamelCaseModel
@@ -40,8 +39,18 @@ class Payment(IdBase, table=True):
 
 class RecurringBill(IdBase, table=True):
     bill_id: UUID = Field(default=None, foreign_key="bill.id")
-    recurrence_interval: datetime
+    recurrence_interval: str
 
 
 class Category(IdBase, table=True):
     name: str
+
+
+class NewBill(SQLModel):
+    name: str
+    amount: int
+    due_date: str
+    category: Optional[str]
+    status: Optional[int]
+    recurring: bool
+    recurrence_interval: Optional[str]

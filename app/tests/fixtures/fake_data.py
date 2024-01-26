@@ -6,6 +6,8 @@ bill_for_tests = {
     "due_date": datetime.date.today().strftime("%Y-%m-%d"),
     "category": None,
     "status": 1,
+    "recurring": False,
+    "recurrence_interval": None,
 }
 
 payment_for_tests = {
