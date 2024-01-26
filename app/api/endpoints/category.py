@@ -1,7 +1,7 @@
 from typing import List
 
 from fastapi import APIRouter, Depends
-from sqlmodel import insert, select
+from sqlmodel import select
 from sqlmodel.ext.asyncio.session import AsyncSession
 
 from app.db.juno_db import get_session
@@ -18,6 +18,9 @@ async def get_categories(
     Gets a list of all possible categories a bill could
     belong to.
     """
+    result = await session.execute(select(Category))
+    categories = result.scalars().all()
+    return [Category(*c) for c in categories]
 
 
 @router.post("/", operation_id="new_category", response_model=Category)
@@ -44,8 +47,9 @@ async def update_category(
     Updates a category. Mostly for changing the name.
     """
 
-    statement = select(Category).where(Category.id == category.id)
-    db_result = await session.execute(statement)
+    db_result = await session.execute(
+        select(Category).where(Category.id == category.id)
+    )
     db_category = db_result.scalar_one()
 
     # compare changes and create object for update

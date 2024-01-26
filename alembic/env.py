@@ -5,8 +5,8 @@ from logging.config import fileConfig
 from typing import Any, Dict
 
 from sqlalchemy import pool
-from sqlalchemy.engine import Connection, Engine
-from sqlalchemy.ext.asyncio import async_engine_from_config
+from sqlalchemy.engine import Connection
+from sqlalchemy.ext.asyncio import async_engine_from_config, AsyncEngine
 from sqlmodel import SQLModel
 
 from alembic import context
@@ -16,7 +16,7 @@ from alembic import context
 config = context.config
 
 # MODELS
-from app.models.all import Bill
+import app.models.all  # noqa: needed to create the tables with "magic"
 
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.
@@ -36,10 +36,9 @@ def do_run_migrations(connection: Connection) -> None:
         context.run_migrations()
 
 
-async def run_async_migrations(engine: Engine) -> None:
+async def run_async_migrations(engine: AsyncEngine) -> None:
     async with engine.connect() as connection:
         await connection.run_sync(do_run_migrations)
-    await engine.dispose()
 
 
 async def run_migrations_online() -> None:

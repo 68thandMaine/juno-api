@@ -1,6 +1,5 @@
 from datetime import datetime
 from typing import List
-
 from fastapi import APIRouter, Depends
 from sqlmodel import select
 from sqlmodel.ext.asyncio.session import AsyncSession
@@ -18,7 +17,7 @@ async def get_bills(session: AsyncSession = Depends(get_session)) -> List[Bill]:
     bills = result.scalars().all()
     if not bills:
         return []
-    return bills
+    return [Bill(**b) for b in bills]
 
 
 @router.post("/", operation_id="add_bill", response_model=Bill)
@@ -35,9 +34,10 @@ async def add_bill(bill: NewBill, session: AsyncSession = Depends(get_session)):
         await session.commit()
         await session.refresh(new_bill)
 
-        if bill.recurring:
+        if bill.recurring and new_bill.id and bill.recurrence_interval:
             recurring_bill = RecurringBill(
-                bill_id=new_bill.id, recurrence_interval=bill.recurrence_interval
+                bill_id=new_bill.id,
+                recurrence_interval=bill.recurrence_interval,
             )
             session.add(recurring_bill)
             await session.commit()
@@ -50,8 +50,7 @@ async def add_bill(bill: NewBill, session: AsyncSession = Depends(get_session)):
 
 @router.put("/update/{id}", operation_id="update_bill")
 async def update_bill(bill: Bill, session: AsyncSession = Depends(get_session)):
-    statement = select(Bill).where(Bill.id == bill.id)
-    db_result = await session.execute(statement)
+    db_result = await session.execute(select(Bill).where(Bill.id == bill.id))
     bill_to_update = db_result.scalar_one()
 
     for k, v in bill.model_dump().items():

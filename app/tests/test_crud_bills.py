@@ -1,13 +1,9 @@
 import copy
 from unittest.mock import MagicMock
-
+import uuid
 import pytest
 from httpx import AsyncClient
-from sqlmodel.ext.asyncio.session import AsyncSession
 
-from app.api.endpoints.bills import add_bill
-from app.core.config import settings
-from app.models.all import Bill
 from app.tests.fixtures.fake_data import bill_for_tests
 
 
@@ -28,8 +24,7 @@ async def test_add_bill_returns_200_upon_successful_completion(
     async_client: AsyncClient,
     setup_fake_bill,
 ):
-    fake_bill = setup_fake_bill()
-    result = await async_client.post("bills/", json=fake_bill)
+    result = await async_client.post("bills/", json=setup_fake_bill())
     assert result.status_code == 200
 
 
@@ -53,7 +48,7 @@ async def test_add_bill_throws_error_if_date_is_incorrect(
 @pytest.mark.asyncio
 @pytest.mark.parametrize(
     "overrides, expected_exception",
-    [({"category": "uuid"}, ("AttributeError", "invalid UUID"))],
+    [({"category": str(uuid.uuid4())}, ("AttributeError", "not present in table"))],
 )
 async def test_add_bill_throws_error_if_category_uuid_is_incorrect(
     async_client: AsyncClient, expected_exception, setup_fake_bill, overrides
@@ -62,7 +57,6 @@ async def test_add_bill_throws_error_if_category_uuid_is_incorrect(
     with pytest.raises(Exception) as excinfo:
         await async_client.post("bills/", json=fake_bill)
     result = str(excinfo)
-
     error_type, error_msg = expected_exception
     assert error_type in result and error_msg in result
 
@@ -74,7 +68,7 @@ async def test_get_bills_returns_empty_list_if_no_data_exists(
     mock = mocker.patch.object(async_client, "get", return_value=MagicMock())
     mock.return_value.json.return_value = []
     result = await async_client.get("bills/")
-    assert result.json.return_value == []
+    assert result.json() == []
 
 
 @pytest.mark.asyncio

@@ -34,8 +34,9 @@ async def new_payment(
     # verify bill exists. If it doesn't then raise 412 error
     # ! Refactor into service
     try:
-        statement = select(Bill).where(Bill.id == payment_data.bill_id)
-        result = await session.execute(statement)
+        result = await session.execute(
+            select(Bill).where(Bill.id == payment_data.bill_id)
+        )
         bill = result.scalar_one()
     except NoResultFound as e:
         raise HTTPException(
@@ -46,7 +47,7 @@ async def new_payment(
     # submit the payment record
     payment = Payment(
         amount=payment_data.amount,
-        payment_date=datetime.fromisoformat(payment_data.payment_date),
+        payment_date=datetime.fromisoformat(str(payment_data.payment_date)),
         bill_id=bill.id,
     )
     session.add(payment)
