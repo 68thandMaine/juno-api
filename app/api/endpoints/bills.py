@@ -6,7 +6,7 @@ from sqlmodel import select
 from sqlmodel.ext.asyncio.session import AsyncSession
 
 from app.db.juno_db import get_session
-from app.models.all import Bill, NewBill
+from app.models.all import Bill, NewBill, RecurringBill
 
 
 router = APIRouter(prefix="/bills")
@@ -34,6 +34,14 @@ async def add_bill(bill: NewBill, session: AsyncSession = Depends(get_session)):
         session.add(new_bill)
         await session.commit()
         await session.refresh(new_bill)
+
+        if bill.recurring:
+            recurring_bill = RecurringBill(
+                bill_id=new_bill.id, recurrence_interval=bill.recurrence_interval
+            )
+            session.add(recurring_bill)
+            await session.commit()
+            await session.refresh(recurring_bill)
 
         return new_bill
     except Exception as e:

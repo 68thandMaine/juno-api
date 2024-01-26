@@ -7,7 +7,7 @@ bill_for_tests = {
     "category": None,
     "status": 1,
     "recurring": False,
-    "recurrence_interval": "MONTHLY",
+    "recurrence_interval": None,
 }
 
 payment_for_tests = {

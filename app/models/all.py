@@ -2,7 +2,6 @@ from datetime import datetime
 from decimal import Decimal
 from typing import Optional
 from uuid import UUID, uuid4
-from pydantic import BaseModel
 from sqlmodel import Field, SQLModel
 
 from app.models.camel_case import CamelCaseModel
@@ -50,7 +49,7 @@ class Category(IdBase, table=True):
 class NewBill(SQLModel):
     name: str
     amount: int
-    due_date: datetime
+    due_date: str
     category: Optional[str]
     status: Optional[int]
     recurring: bool
