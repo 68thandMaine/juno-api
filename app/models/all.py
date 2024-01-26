@@ -40,7 +40,7 @@ class Payment(IdBase, table=True):
 
 class RecurringBill(IdBase, table=True):
     bill_id: UUID = Field(default=None, foreign_key="bill.id")
-    recurrence_interval: datetime
+    recurrence_interval: str
 
 
 class Category(IdBase, table=True):
@@ -50,8 +50,8 @@ class Category(IdBase, table=True):
 class NewBill(SQLModel):
     name: str
     amount: int
-    due_date: str
+    due_date: datetime
     category: Optional[str]
     status: Optional[int]
-    # recurring: bool
-    # recurrence_interval: str
+    recurring: bool
+    recurrence_interval: Optional[str]
