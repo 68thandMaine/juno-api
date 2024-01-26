@@ -5,7 +5,6 @@ import psycopg2
 import pytest
 import pytest_asyncio
 from httpx import AsyncClient
-from sqlmodel.ext.asyncio.session import AsyncSession
 
 from app.core.config import settings
 from app.db.juno_db import get_session

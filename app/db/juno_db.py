@@ -8,7 +8,7 @@ from sqlmodel import SQLModel
 from app.core.config import settings
 
 async_engine = create_async_engine(settings.db_connection, echo=True, future=True)
-SessionFactory = sessionmaker(async_engine, class_=AsyncSession, expire_on_commit=False)
+SessionFactory = sessionmaker(async_engine, class_=AsyncSession, expire_on_commit=False)  # type: ignore
 
 
 class JunoDB:
