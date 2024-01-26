@@ -1,5 +1,4 @@
 import copy
-import datetime
 from unittest.mock import MagicMock
 
 import pytest
@@ -9,16 +8,10 @@ from sqlmodel.ext.asyncio.session import AsyncSession
 from app.api.endpoints.bills import add_bill
 from app.core.config import settings
 from app.models.all import Bill
-
-bill_for_tests = {
-    "name": "TEST_BILL",
-    "amount": 12,
-    "due_date": datetime.date.today().strftime("%Y-%m-%d"),
-    "category": None,
-    "status": 1,
-}
+from app.tests.fixtures.fake_data import bill_for_tests
 
 
+# ! Turn this into a utility function because it's used in test_crud_payment as well
 @pytest.fixture
 def setup_fake_bill():
     def _setup_fake_bill(overrides=None):

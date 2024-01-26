@@ -29,6 +29,10 @@ class Bill(IdBase, table=True):
 
 
 class Payment(IdBase, table=True):
+    """
+    Represents the payment on a Bill.
+    """
+
     amount: Decimal
     payment_date: datetime
     bill_id: UUID = Field(default=None, foreign_key="bill.id")
