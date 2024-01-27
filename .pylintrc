@@ -1,3 +1,4 @@
 [MESSAGES CONTROL]
 disable=
-  missing-function-docstring
+  missing-function-docstring,
+  not-callable

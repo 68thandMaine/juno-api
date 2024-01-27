@@ -29,7 +29,7 @@ class BillCreate(BillBase):
     Object sent in API requests that maps that maps to two tables.
     """
 
-    due_date: str  # type: ignore - needed to map json to datetime
+    due_date: str  # type: ignore
     recurring: bool
     recurrence_interval: Optional[str]
 

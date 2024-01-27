@@ -26,7 +26,7 @@ async def async_client():
 
 @pytest_asyncio.fixture(scope="function")
 async def async_session() -> AsyncGenerator:
-    yield get_session()
+    return get_session()
 
 
 @pytest.fixture(scope="session", autouse=True)
