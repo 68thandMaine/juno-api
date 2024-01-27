@@ -7,16 +7,15 @@ from sqlmodel.ext.asyncio.session import AsyncSession
 from app.db.juno_db import get_session
 from app.models.all import RecurringBill
 from app.models.bill import Bill, BillCreate
+from app.api.dependencies import get_bill_crud
 
 router = APIRouter(prefix="/bills")
 
 
 @router.get("/", operation_id="get_bills", response_model=list)
-async def get_bills(session: AsyncSession = Depends(get_session)):
-    bills = await session.scalars(select(Bill))
-    if not bills:
-        return []
-    return bills.all()
+async def get_bills(bill_crud=Depends(get_bill_crud)):
+    bills = await bill_crud.get()
+    return bills
 
 
 @router.post("/", operation_id="add_bill", response_model=Bill)
