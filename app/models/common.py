@@ -1,4 +1,7 @@
+from uuid import UUID, uuid4
+
 from pydantic import BaseModel
+from sqlmodel import Field, SQLModel
 
 from app.lib.utils.str_utils import camel_case
 
@@ -39,3 +42,16 @@ class CamelCaseModel(BaseModel):
     class ConfigDict:
         alias_generator = camel_case
         allow_population_by_field_name = True
+
+
+class IdBase(CamelCaseModel, SQLModel):
+    """
+    Provides the base ID for all models and introduces code to
+    swap snake_case and camel case.
+    """
+
+    id: UUID | None = Field(
+        default_factory=uuid4,
+        primary_key=True,
+        nullable=False,
+    )

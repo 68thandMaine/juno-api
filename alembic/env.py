@@ -6,7 +6,7 @@ from typing import Any, Dict
 
 from sqlalchemy import pool
 from sqlalchemy.engine import Connection
-from sqlalchemy.ext.asyncio import async_engine_from_config, AsyncEngine
+from sqlalchemy.ext.asyncio import AsyncEngine, async_engine_from_config
 from sqlmodel import SQLModel
 
 from alembic import context
@@ -17,6 +17,7 @@ config = context.config
 
 # MODELS
 import app.models.all  # noqa: needed to create the tables with "magic"
+import app.models.bill  # noqa: needed to create the tables with "magic"
 
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.

@@ -1,27 +1,26 @@
 from datetime import datetime
-from typing import List
+
 from fastapi import APIRouter, Depends
 from sqlmodel import select
 from sqlmodel.ext.asyncio.session import AsyncSession
 
 from app.db.juno_db import get_session
-from app.models.all import Bill, NewBill, RecurringBill
-
+from app.models.all import RecurringBill
+from app.models.bill import Bill, BillCreate
 
 router = APIRouter(prefix="/bills")
 
 
-@router.get("/", operation_id="get_bills")
-async def get_bills(session: AsyncSession = Depends(get_session)) -> List[Bill]:
-    result = await session.execute(select(Bill))
-    bills = result.scalars().all()
+@router.get("/", operation_id="get_bills", response_model=list)
+async def get_bills(session: AsyncSession = Depends(get_session)):
+    bills = await session.scalars(select(Bill))
     if not bills:
         return []
-    return [Bill(**b) for b in bills]
+    return bills.all()
 
 
 @router.post("/", operation_id="add_bill", response_model=Bill)
-async def add_bill(bill: NewBill, session: AsyncSession = Depends(get_session)):
+async def add_bill(bill: BillCreate, session: AsyncSession = Depends(get_session)):
     try:
         new_bill = Bill(
             name=bill.name,
