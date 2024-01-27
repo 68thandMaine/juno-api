@@ -10,6 +10,11 @@ from app.models.camel_case import CamelCaseModel
 
 
 class IdBase(CamelCaseModel, SQLModel):
+    """
+    Provides the base ID for all models and introduces code to
+    swap snake_case and camel case.
+    """
+
     id: UUID | None = Field(
         default_factory=uuid4,
         primary_key=True,
@@ -19,6 +24,10 @@ class IdBase(CamelCaseModel, SQLModel):
 
 @dataclass
 class BillBase(SQLModel):
+    """
+    Basic properties of a bill
+    """
+
     name: str
     amount: int
     due_date: datetime
@@ -31,10 +40,18 @@ class BillBase(SQLModel):
 
 
 class Bill(BillBase, IdBase, table=True):
+    """
+    This class represents a table with columns that map to the BillBase.
+    """
+
     pass
 
 
 class BillCreate(BillBase):
+    """
+    We expect to see this object when new bills are received in API requests
+    """
+
     recurring: bool
     recurrence_interval: Optional[str]
 
@@ -52,9 +69,17 @@ class Payment(IdBase, table=True):
 
 @dataclass
 class RecurringBill(IdBase, table=True):
+    """
+    Represents the recurringBill table.
+    """
+
     recurrence_interval: str
     bill_id: Optional[UUID] = Field(default=None, foreign_key="bill.id")
 
 
 class Category(IdBase, table=True):
+    """
+    Category represents a group a bill could be classified under.
+    """
+
     name: str
