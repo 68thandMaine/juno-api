@@ -17,6 +17,7 @@ config = context.config
 
 # MODELS
 import app.models.all  # noqa: needed to create the tables with "magic"
+import app.models.bill  # noqa: needed to create the tables with "magic"
 
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.

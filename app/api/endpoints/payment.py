@@ -7,7 +7,8 @@ from sqlmodel.ext.asyncio.session import AsyncSession
 
 from app.db.juno_db import get_session
 from app.lib.constants import PAYMENT_ERROR_BILL_ID_NOT_FOUND
-from app.models.all import Bill, Payment
+from app.models.all import Payment
+from app.models.bill import Bill
 
 router = APIRouter(prefix="/payment")
 

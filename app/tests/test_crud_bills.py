@@ -55,6 +55,7 @@ async def test_add_bill_throws_error_if_category_uuid_is_incorrect(
     async_client: AsyncClient, expected_exception, setup_fake_bill, overrides
 ):
     fake_bill = setup_fake_bill(overrides)
+
     with pytest.raises(Exception) as excinfo:
         await async_client.post("bills/", json=fake_bill)
     result = str(excinfo)
