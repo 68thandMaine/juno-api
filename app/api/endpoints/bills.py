@@ -1,12 +1,12 @@
 from datetime import datetime
 from typing import List
+
 from fastapi import APIRouter, Depends
 from sqlmodel import select
 from sqlmodel.ext.asyncio.session import AsyncSession
 
 from app.db.juno_db import get_session
-from app.models.all import Bill, NewBill, RecurringBill
-
+from app.models.all import Bill, BillCreate, RecurringBill
 
 router = APIRouter(prefix="/bills")
 
@@ -21,12 +21,12 @@ async def get_bills(session: AsyncSession = Depends(get_session)) -> List[Bill]:
 
 
 @router.post("/", operation_id="add_bill", response_model=Bill)
-async def add_bill(bill: NewBill, session: AsyncSession = Depends(get_session)):
+async def add_bill(bill: BillCreate, session: AsyncSession = Depends(get_session)):
     try:
         new_bill = Bill(
             name=bill.name,
             amount=bill.amount,
-            due_date=datetime.fromisoformat(bill.due_date),
+            due_date=datetime.fromisoformat(str(bill.due_date)),
             category=bill.category,
             status=bill.status,
         )
