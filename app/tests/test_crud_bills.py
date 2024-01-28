@@ -4,7 +4,7 @@ from unittest.mock import MagicMock
 
 import pytest
 from httpx import AsyncClient
-
+from app.models import Bill
 from app.tests.fixtures.fake_data import bill_for_tests
 
 
@@ -88,6 +88,7 @@ async def test_update_bill_returns_bill_with_updated_data(
     bill = created_bill.json()
     bill["name"] = new_name
     bill_id = bill["id"]
+
     result = await async_client.put(f"bills/update/{bill_id}", json=bill)
     assert result.status_code == 200
     assert result.json()["name"] == new_name
