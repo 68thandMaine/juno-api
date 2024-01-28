@@ -1,4 +1,4 @@
-from typing import AsyncGenerator
+from typing import AsyncContextManager
 
 from sqlalchemy.ext.asyncio import create_async_engine
 from sqlalchemy.ext.asyncio.session import AsyncSession
@@ -48,7 +48,10 @@ class JunoDB:
         return await async_engine.dispose()
 
 
-async def get_session() -> AsyncGenerator:
+async def get_session() -> AsyncContextManager[AsyncSession]:
     async_session = SessionFactory()
-    async with async_session as session:
-        yield session
+    try:
+        async with async_session as session:
+            yield session
+    finally:
+        await async_session.close()

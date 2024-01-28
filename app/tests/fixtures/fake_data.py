@@ -3,7 +3,7 @@ import datetime
 bill_for_tests = {
     "name": "TEST_BILL",
     "amount": 12,
-    "due_date": datetime.date.today().strftime("%Y-%m-%d"),
+    "due_date": datetime.date.today().strftime("%Y-%m-%d"),  # < this is a string
     "category": None,
     "status": 1,
     "recurring": False,

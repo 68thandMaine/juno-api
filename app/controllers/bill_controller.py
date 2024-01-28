@@ -1,0 +1,111 @@
+from uuid import UUID
+
+from sqlalchemy.exc import IntegrityError
+
+from app.lib.exceptions import ServiceException
+from app.lib.utils.time import convert_str_to_datetime
+from app.models import Bill, BillCreate, RecurringBill
+from app.services.crud import CRUDService
+
+
+class BillController:
+    """
+    Controller for handling the various behaviors needed for interacting
+    with Bills
+    """
+
+    def __init__(
+        self,
+    ):
+        self.bill_service = CRUDService(Bill)
+        self.recurring_bill_service = CRUDService(RecurringBill)
+
+    async def _add_recurring_bill(self, bill, recurrence_interval):
+        try:
+            await self.recurring_bill_service.create(
+                RecurringBill(bill_id=bill.id, recurrence_interval=recurrence_interval)
+            )
+        except Exception as e:
+            raise Exception(f"There was an error adding a recurring bill: \n {e}")
+
+    def _create_bill(self, data: BillCreate) -> Bill:
+        try:
+            if isinstance(data, dict):
+                data = BillCreate(**data)
+
+            bill = Bill(
+                name=data.name,
+                amount=data.amount,
+                due_date=convert_str_to_datetime(data.due_date),
+                category=data.category,
+                status=data.status,
+            )
+
+        except ValueError as e:
+            raise ValueError(e) from e
+
+        return bill
+
+    async def add_bill(self, new_bill: BillCreate) -> Bill:
+        try:
+            bill = self._create_bill(new_bill)
+            await self.bill_service.create(bill)
+            recurring = getattr(new_bill, "recurring", "")
+
+            if recurring != "" and getattr(bill, "id"):
+                self._add_recurring_bill(bill, getattr(new_bill, "recurrence_interval"))
+
+        except (ValueError, IntegrityError) as e:
+            msg = e
+            if isinstance(e, IntegrityError):
+                msg = str(e.orig)
+            raise RuntimeError(f" Error adding bill to database ==> {msg}") from e
+
+        return bill
+
+    async def get_bills(self) -> list[Bill]:
+        """
+        Returns all of the bills from the database
+        """
+        try:
+            results = await self.bill_service.get()
+        except Exception as e:
+            raise ServiceException(e) from e
+        return results
+
+    async def get_one_bill(self, bill_id: UUID) -> Bill:
+        """
+        Returns one bill from the database
+        """
+        try:
+            found_bill = await self.bill_service.get_one(bill_id)
+        except Exception as e:
+            raise Exception(
+                f"There has been an unexpected issue getting a bill: {e}"
+            ) from e
+        return found_bill
+
+    async def update_bill(self, bill: Bill):
+        """
+        Updates a bill
+
+        Accepts a Bill as a parameter. The Bill should contain the updated
+        data
+
+        Can be used to delete/archive bills
+        """
+
+        db_bill = await self.bill_service.get_one(bill.id)
+        if not db_bill:
+            raise ValueError(f"No bill with id {bill.id} was found")
+
+        for key in db_bill.model_dump().keys():
+            update_value = getattr(bill, key)
+            setattr(db_bill, key, update_value)
+
+        try:
+            updated_bill = await self.bill_service.put(db_bill.id, db_bill)
+        except Exception as e:
+            raise Exception(f"There has been an error updating a bill: \n {e}") from e
+
+        return updated_bill
