@@ -1,6 +1,7 @@
 import copy
 
 import pytest
+
 from app.models import Bill
 from app.tests.fixtures.fake_data import bill_for_tests
 

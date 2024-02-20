@@ -14,7 +14,7 @@ class CRUDService:
     """
 
     def __init__(self, model: Type[SQLModel]):
-        self._session = None
+        self._session = get_session
         self.model = model
 
     async def _add_to_database(self, session, data):
@@ -31,7 +31,7 @@ class CRUDService:
         Gets members of the model
         """
         try:
-            async for session in get_session():
+            async for session in self._session():
                 results = await session.scalars(select(self.model))
         except Exception as e:
             raise ServiceException(e) from e
@@ -42,7 +42,7 @@ class CRUDService:
         Creates a new member of the model and returns the data
         """
         try:
-            async for session in get_session():
+            async for session in self._session():
                 await self._add_to_database(session, data)
                 return data
         except Exception as e:
@@ -53,10 +53,13 @@ class CRUDService:
         Updates a member of the model being queried
         """
         try:
-            async for session in get_session():
+            async for session in self._session():
                 statement = select(self.model).where(self.model.id == model_id)
                 db_data = await session.scalar(statement)
-
+                if not db_data:
+                    raise ServiceException(
+                        f"Cannot update because no data with id {model_id} can be found"
+                    )
                 for k, v in data.model_dump().items():  # type: ignore
                     if k == "due_date" and isinstance(v, str):
                         v = convert_str_to_datetime(v)
@@ -72,7 +75,7 @@ class CRUDService:
         Returns one of the model being queried for
         """
         try:
-            async for session in get_session():
+            async for session in self._session():
                 statement = select(self.model).where(self.model.id == model_id)
                 data = await session.scalar(statement)
                 await session.close()
@@ -82,7 +85,7 @@ class CRUDService:
 
     async def delete(self, model_id: UUID):
         try:
-            async for session in get_session():
+            async for session in self._session():
                 statement = select(self.model).where(self.model.id == model_id)
                 result = await session.scalar(statement)
                 await session.delete(result)

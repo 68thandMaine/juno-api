@@ -1,11 +1,13 @@
-from uuid import uuid4
-import pytest
 from unittest.mock import AsyncMock
+from uuid import uuid4
+
+import pytest
 from httpx import AsyncClient
-from app.models import Bill
+
 from app.controllers.bill_controller import BillController
-from app.tests.fixtures.setup_fake_bill import setup_fake_bill
 from app.lib.exceptions import ControllerException
+from app.models import Bill
+from app.tests.fixtures.setup_fake_bill import setup_fake_bill
 
 BILL_ENDPOINT = "bills/"
 
@@ -32,7 +34,7 @@ async def test_get_bills_returns_500_when_unsuccessful(
     )
 
     result = await async_client.get(BILL_ENDPOINT)
-    breakpoint()
+
     assert result.status_code == 500
 
 

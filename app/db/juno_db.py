@@ -48,7 +48,7 @@ class JunoDB:
         return await async_engine.dispose()
 
 
-async def get_session() -> AsyncContextManager[AsyncSession]:
+async def get_session():
     async_session = SessionFactory()
     try:
         async with async_session as session:
