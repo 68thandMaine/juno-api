@@ -4,10 +4,8 @@ from enum import Enum
 from typing import Optional
 from uuid import UUID
 
-from pydantic import field_validator
 from sqlmodel import Field
 
-from app.lib.utils.time import convert_str_to_datetime
 from app.models.common import CamelCaseModel, IdBase
 
 

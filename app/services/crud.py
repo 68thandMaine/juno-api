@@ -1,7 +1,6 @@
-from typing import AsyncContextManager, List, Type
+from typing import List, Type
 from uuid import UUID
 
-from sqlalchemy.ext.asyncio.session import AsyncSession
 from sqlmodel import SQLModel, select
 
 from app.db.juno_db import get_session
@@ -31,44 +30,55 @@ class CRUDService:
         """
         Gets members of the model
         """
-        async for session in get_session():
-            results = await session.scalars(select(self.model))
+        try:
+            async for session in get_session():
+                results = await session.scalars(select(self.model))
+        except Exception as e:
+            raise ServiceException(e) from e
         return results.all() if results else []
 
     async def create(self, data: Type[SQLModel]):
         """
         Creates a new member of the model and returns the data
         """
-        async for session in get_session():
-            await self._add_to_database(session, data)
-            return data
+        try:
+            async for session in get_session():
+                await self._add_to_database(session, data)
+                return data
+        except Exception as e:
+            raise ServiceException(e) from e
 
     async def put(self, model_id: UUID, data: Type[SQLModel]):
         """
         Updates a member of the model being queried
         """
-        async for session in get_session():
-            statement = select(self.model).where(self.model.id == model_id)
-            db_data = await session.scalar(statement)
+        try:
+            async for session in get_session():
+                statement = select(self.model).where(self.model.id == model_id)
+                db_data = await session.scalar(statement)
 
-            for k, v in data.model_dump().items():  # type: ignore
-                if k == "due_date" and isinstance(v, str):
-                    v = convert_str_to_datetime(v)
-                setattr(db_data, k, v)
+                for k, v in data.model_dump().items():  # type: ignore
+                    if k == "due_date" and isinstance(v, str):
+                        v = convert_str_to_datetime(v)
+                    setattr(db_data, k, v)
 
-            await self._add_to_database(session, db_data)
-
+                await self._add_to_database(session, db_data)
+        except Exception as e:
+            raise ServiceException(e) from e
         return db_data
 
     async def get_one(self, model_id: UUID):
         """
         Returns one of the model being queried for
         """
-        async for session in get_session():
-            statement = select(self.model).where(self.model.id == model_id)
-            data = await session.scalar(statement)
-            await session.close()
-            return data
+        try:
+            async for session in get_session():
+                statement = select(self.model).where(self.model.id == model_id)
+                data = await session.scalar(statement)
+                await session.close()
+        except Exception as e:
+            raise ServiceException(e) from e
+        return data
 
     async def delete(self, model_id: UUID):
         try:

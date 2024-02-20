@@ -1,6 +1,6 @@
 from sqlmodel import select
 
-from app.models import Bill, BillingFrequency, RecurringBill
+from app.models import RecurringBill
 from app.services.crud import CRUDService
 
 
@@ -17,9 +17,9 @@ class RecurringBillService(CRUDService):
         super().__init__(RecurringBill)
 
     def get_by_recurrence_interval(self):
-        statement = (
-            select(self.model, Bill)
-            .join(Bill)
-            .on(recurrence_interval=BillingFrequency.MONTHLY)
-        )
+        # statement = (
+        #     select(self.model, Bill)
+        #     .join(Bill)
+        #     .on(recurrence_interval=BillingFrequency.MONTHLY)
+        # )
         return []

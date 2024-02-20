@@ -2,7 +2,7 @@ from uuid import UUID
 
 from sqlalchemy.exc import IntegrityError
 
-from app.lib.exceptions import ServiceException
+from app.lib.exceptions import ControllerException, ServiceException
 from app.lib.utils.time import convert_str_to_datetime
 from app.models import Bill, BillCreate, RecurringBill
 from app.services.crud import CRUDService
@@ -25,8 +25,14 @@ class BillController:
             await self.recurring_bill_service.create(
                 RecurringBill(bill_id=bill.id, recurrence_interval=recurrence_interval)
             )
+        except ServiceException as e:
+            raise ControllerException(
+                detail=f"There was an error creating recurring bill with the bill service: {str(e)}"
+            ) from e
         except Exception as e:
-            raise Exception(f"There was an error adding a recurring bill: \n {e}")
+            raise ControllerException(
+                f"There was an error adding a recurring bill: \n {e}"
+            ) from e
 
     def _create_bill(self, data: BillCreate) -> Bill:
         try:
@@ -40,9 +46,12 @@ class BillController:
                 category=data.category,
                 status=data.status,
             )
-
         except ValueError as e:
-            raise ValueError(e) from e
+            raise ControllerException(
+                detail=f"There was an error with a value when creating a new bill: \n {e}"
+            ) from e
+        except Exception as e:
+            raise ControllerException(detail=e) from e
 
         return bill
 
@@ -59,7 +68,9 @@ class BillController:
             msg = e
             if isinstance(e, IntegrityError):
                 msg = str(e.orig)
-            raise RuntimeError(f" Error adding bill to database ==> {msg}") from e
+            raise ControllerException(
+                f" Error adding bill to database ==> {msg}"
+            ) from e
 
         return bill
 
@@ -70,7 +81,7 @@ class BillController:
         try:
             results = await self.bill_service.get()
         except Exception as e:
-            raise ServiceException(e) from e
+            raise ControllerException(e) from e
         return results
 
     async def get_one_bill(self, bill_id: UUID) -> Bill:
@@ -80,12 +91,12 @@ class BillController:
         try:
             found_bill = await self.bill_service.get_one(bill_id)
         except Exception as e:
-            raise Exception(
+            raise ControllerException(
                 f"There has been an unexpected issue getting a bill: {e}"
             ) from e
         return found_bill
 
-    async def update_bill(self, bill: Bill):
+    async def update_bill(self, bill: Bill) -> Bill:
         """
         Updates a bill
 
@@ -106,6 +117,8 @@ class BillController:
         try:
             updated_bill = await self.bill_service.put(db_bill.id, db_bill)
         except Exception as e:
-            raise Exception(f"There has been an error updating a bill: \n {e}") from e
+            raise ControllerException(
+                detail=f"There has been an error updating a bill: \n {e}"
+            ) from e
 
         return updated_bill

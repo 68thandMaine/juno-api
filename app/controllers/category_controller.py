@@ -1,6 +1,6 @@
 from uuid import UUID
 
-from app.lib.exceptions import ServiceException
+from app.lib.exceptions import ControllerException, ServiceException
 from app.models import Category
 from app.services.crud import CRUDService
 
@@ -19,11 +19,15 @@ class CategoryController:
         """
         try:
             results = await self.category_service.get()
+        except ServiceException as e:
+            raise ControllerException(
+                detail=f"There was an issue with the category service when getting categories:\n {e}"
+            ) from e
         except Exception as e:
-            raise ServiceException(e) from e
+            raise ControllerException(detail=e) from e
         return results
 
-    async def add_category(self, category):
+    async def add_category(self, category) -> Category:
         """
         Creates a new category in the database
 
@@ -34,18 +38,22 @@ class CategoryController:
         try:
             category = await self.category_service.create(category)
         except ValueError as e:
-            raise ServiceException() from e
+            raise ControllerException(detail=e) from e
         except Exception as e:
-            raise Exception(e) from e
+            raise ControllerException(detail=e) from e
         return category
 
     async def remove_category(self, category_id: UUID):
         try:
             await self.category_service.delete(category_id)
+        except ServiceException as e:
+            raise ControllerException(
+                detail=f"There was an issue with the category service when removing a category:\n {e}"
+            ) from e
         except Exception as e:
-            raise Exception(e) from e
+            raise ControllerException(detail=e) from e
 
-    async def update_category(self, category: Category):
+    async def update_category(self, category: Category) -> Category:
         """
         Updates a category
 
@@ -54,7 +62,11 @@ class CategoryController:
         """
         try:
             category = await self.category_service.put(category.id, category)
+        except ServiceException as e:
+            raise ControllerException(
+                detail=f"There was an issue with the category service when updating a category:\n {e}"
+            ) from e
         except Exception as e:
-            raise Exception(e) from e
+            raise ControllerException(detail=e) from e
 
         return category
