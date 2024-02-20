@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 
 from app.controllers.payment_controller import PaymentController
-from app.lib.exceptions import ControllerException
+from app.lib.exceptions import ControllerException, ServiceException
 from app.models import Payment
 
 router = APIRouter(prefix="/payment")
@@ -35,6 +35,7 @@ async def new_payment(
     """
     try:
         payment = await controller.make_payment(payment_data)
+
     except ControllerException as e:
         raise HTTPException(
             status_code=e.status_code,

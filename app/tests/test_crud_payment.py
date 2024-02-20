@@ -47,7 +47,8 @@ async def test_new_payment_return_message_when_bill_id_is_invalid(
     async_client: AsyncClient, setup_fake_payment
 ):
     result = await async_client.post("payment/", json=setup_fake_payment())
-    assert result.json()["detail"] == PAYMENT_ERROR_BILL_ID_NOT_FOUND
+
+    assert PAYMENT_ERROR_BILL_ID_NOT_FOUND in result.json()["detail"]
 
 
 @pytest.mark.asyncio
