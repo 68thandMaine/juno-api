@@ -4,7 +4,7 @@ from sqlalchemy.exc import IntegrityError
 
 from app.lib.exceptions import ControllerException, ServiceException
 from app.lib.utils.time import convert_str_to_datetime
-from app.models import Bill, BillCreate, RecurringBill
+from app.models import Bill, BillCreate, Category, RecurringBill
 from app.services.crud import CRUDService
 
 
@@ -18,6 +18,7 @@ class BillController:
         self,
     ):
         self.bill_service = CRUDService(Bill)
+        self.category_service = CRUDService(Category)
         self.recurring_bill_service = CRUDService(RecurringBill)
 
     async def _add_recurring_bill(self, bill, recurrence_interval):
@@ -39,7 +40,7 @@ class BillController:
             if isinstance(data, dict):
                 data = BillCreate(**data)
 
-            bill = Bill(
+            return Bill(
                 name=data.name,
                 amount=data.amount,
                 due_date=convert_str_to_datetime(data.due_date),
@@ -48,26 +49,44 @@ class BillController:
             )
         except ValueError as e:
             raise ControllerException(
-                detail=f"There was an error with a value when creating a new bill: \n {e}"
+                detail=f"There was an error with a value when creating a new bill: {e}"
             ) from e
         except Exception as e:
             raise ControllerException(detail=e) from e
 
-        return bill
-
     async def add_bill(self, new_bill: BillCreate) -> Bill:
+        """
+        Controls the flow fo adding a new bill to the database.
+
+        Args:
+            new_bill (BillCreate): a representation of a bill that is received by an api.
+
+        Raises:
+            ValueError: _description_
+            ControllerException: _description_
+
+        Returns:
+            Bill: Bill object that was added to the database.
+        """
         try:
+            category = new_bill.category
+            if category and not await self.category_service.get_one(category):
+                raise ValueError("Category does not exist")
+
             bill = self._create_bill(new_bill)
             await self.bill_service.create(bill)
             recurring = getattr(new_bill, "recurring", "")
 
-            if recurring != "" and getattr(bill, "id"):
-                self._add_recurring_bill(bill, getattr(new_bill, "recurrence_interval"))
+            if recurring and getattr(bill, "id"):
+                await self._add_recurring_bill(
+                    bill, getattr(new_bill, "recurrence_interval")
+                )
 
-        except (ValueError, IntegrityError) as e:
+        except (ValueError, IntegrityError, ServiceException) as e:
             msg = e
             if isinstance(e, IntegrityError):
                 msg = str(e.orig)
+
             raise ControllerException(
                 f" Error adding bill to database ==> {msg}"
             ) from e
@@ -105,7 +124,6 @@ class BillController:
 
         Can be used to delete/archive bills
         """
-
         db_bill = await self.bill_service.get_one(bill.id)
         if not db_bill:
             raise ValueError(f"No bill with id {bill.id} was found")

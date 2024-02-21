@@ -3,9 +3,12 @@ from uuid import uuid4
 import pytest
 
 from app.controllers.category_controller import CategoryController
+from app.lib.constants import CANNOT_UPDATE
 from app.lib.exceptions import ControllerException, ServiceException
 from app.models import Category
 from app.services.crud import CRUDService
+
+INVALID_INPUT = "invalid input for query argument"
 
 
 @pytest.fixture
@@ -21,14 +24,6 @@ async def test_get_categories_raises_controller_exception(
     with pytest.raises(ControllerException) as exc_info:
         await category_controller.get_categories()
     assert isinstance(exc_info.value, ControllerException)
-
-
-@pytest.mark.asyncio
-async def test_get_categories_catches_service_errors(
-    mocker, category_controller: CategoryController
-):
-    mocker.patch.object(CRUDService, "get", side_effect=ServiceException())
-    assert True is False
 
 
 @pytest.mark.asyncio
@@ -67,7 +62,7 @@ async def test_get_categories_returns_list_if_no_categories_exist(
 
 
 @pytest.mark.asyncio
-async def test_add_category_raises_controllerexception(
+async def test_add_category_raises_value_error_for_wrong_input(
     mocker, category_controller: CategoryController
 ):
     mocker.patch.object(CRUDService, "get", side_effect=ServiceException())
@@ -87,7 +82,7 @@ async def test_add_category_creates_new_category(
     )
 
     # Act
-    new_category_data = {"name": "NewCategory"}
+    new_category_data = Category(**{"name": "NewCategory"})
     new_category = await category_controller.add_category(new_category_data)
 
     # Assert
@@ -105,7 +100,7 @@ async def test_add_category_raises_error_for_invalid_params(
     category = {"name": 1}
     with pytest.raises(ControllerException) as exc_info:
         await category_controller.add_category(Category(**category))
-    assert "invalid input for query argument" in str(exc_info.value)
+    assert INVALID_INPUT in str(exc_info.value)
 
 
 @pytest.mark.asyncio
@@ -124,7 +119,7 @@ async def test_remove_category_removes_category(
 async def test_remove_category_raises_ValueError_if_category_id_is_invalid(
     category_controller: CategoryController,
 ):
-    with pytest.raises(ValueError) as exc_info:
+    with pytest.raises(ControllerException) as exc_info:
         uuid = 1
         await category_controller.remove_category(uuid)
     assert "Invalid Category Id" in str(exc_info.value)
@@ -157,16 +152,16 @@ async def test_update_category_raises_error_for_invalid_params(
     with pytest.raises(ControllerException) as exc_info:
         updated_category_data = Category(id=1, name=3)
         await category_controller.update_category(updated_category_data)
-    assert "invalid input for query argument" in str(exc_info.value)
+    assert INVALID_INPUT in str(exc_info.value)
 
 
 @pytest.mark.asyncio
-async def test_update_category_raises_NotFoucndError_with_non_existant_category(
+async def test_update_category_raises_error_with_non_existent_category(
     category_controller: CategoryController,
 ):
     uuid_id = uuid4()
     updated_category_data = Category(id=uuid_id, name="NewName")
-    with pytest.raises(Exception) as exc_info:
+    with pytest.raises(ControllerException) as exc_info:
         await category_controller.update_category(updated_category_data)
-    message = f"Cannot update because no data with id {uuid_id} can be found"
+    message = f"{CANNOT_UPDATE} {uuid_id}"
     assert message in str(exc_info.value)

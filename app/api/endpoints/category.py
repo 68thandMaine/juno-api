@@ -6,6 +6,12 @@ from app.models import Category, CategoryInput
 router = APIRouter(prefix="/category")
 
 
+async def handle_router_exception(e: Exception):
+    raise HTTPException(
+        status_code=500, detail=f"Exception caught in router: {str(e)}"
+    ) from e
+
+
 @router.get("/", operation_id="get_categories", response_model=list[Category])
 async def get_categories(controller=Depends(CategoryController)) -> list[Category]:
     """
@@ -13,12 +19,9 @@ async def get_categories(controller=Depends(CategoryController)) -> list[Categor
     belong to.
     """
     try:
-        categories = await controller.get()
+        return await controller.get()
     except Exception as e:
-        raise HTTPException(
-            status_code=500, detail=f"Failed to get categories: {str(e)}"
-        ) from e
-    return categories
+        handle_router_exception(e)
 
 
 @router.post("/", operation_id="new_category", response_model=Category)
@@ -31,9 +34,7 @@ async def new_category(
     try:
         return await controller.add_category(category)
     except Exception as e:
-        raise HTTPException(
-            status_code=500, detail=f"Failed to create new category: {str(e)}"
-        ) from e
+        handle_router_exception(e)
 
 
 @router.put("/{category_id}", operation_id="update_category", response_model=Category)
@@ -45,9 +46,6 @@ async def update_category(
     """
 
     try:
-        updated_category = await controller.update_category(category)
+        return await controller.update_category(category)
     except Exception as e:
-        raise HTTPException(
-            status_code=500, detail=f"Failed to update category: {str(e)}"
-        ) from e
-    return updated_category
+        handle_router_exception(e)

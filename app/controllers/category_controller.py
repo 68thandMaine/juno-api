@@ -14,64 +14,63 @@ class CategoryController:
         self.category_service = CRUDService(Category)
 
     async def get_categories(self) -> list[Category]:
-        """
-        Returns a list of all categories a financial transaction could belong to
+        """Get a list of all categories in the database.
+
+        Returns:
+            list[Category]: List of Category objects.
         """
         try:
-            results = await self.category_service.get()
+            return await self.category_service.get()
         except ServiceException as e:
-            raise ControllerException(
-                detail=f"There was an issue with the category service when getting categories:\n {e}"
-            ) from e
+            raise ControllerException(detail=f"Service error: {str(e)}") from e
         except Exception as e:
-            raise ControllerException(detail=e) from e
-        return results
+            raise ControllerException(detail=f"Unexpected error: {str(e)}") from e
 
     async def add_category(self, category: Category) -> Category:
-        """
-        Creates a new category in the database
+        """Creates a new category in the database.
 
         Args:
-            category_name (str): The name of the new category
+            category (Category): The Category object to be added.
+
+        Returns:
+            Category: The added Category object.
         """
         if not isinstance(category, Category):
-            raise ValueError("Not of correct type")
+            raise ControllerException(detail="Invalid Category Object")
         try:
-            added_category = await self.category_service.create(category)
-        except ValueError as e:
-            raise ValueError(e) from e
+            return await self.category_service.create(category)
         except ServiceException as e:
-            raise ControllerException(detail=e) from e
-        return added_category
+            raise ControllerException(detail=f"Service error: {str(e)}") from e
+        except Exception as e:
+            raise ControllerException(detail=f"Unexpected error: {str(e)}") from e
 
     async def remove_category(self, category_id: UUID):
+        """Removes a category from the database.
+
+        Args:
+            category_id (UUID): The UUID of the category to be removed.
+        """
         if not isinstance(category_id, UUID):
-            raise ValueError("Invalid Category Id")
+            raise ControllerException(detail="Invalid Category Id")
         try:
             await self.category_service.delete(category_id)
         except ServiceException as e:
-            raise ControllerException(
-                detail=f"There was an issue with the category service when removing a category:\n {e}"
-            ) from e
+            raise ControllerException(detail=f"Service error: {str(e)}") from e
         except Exception as e:
-            raise ControllerException(detail=e) from e
+            raise ControllerException(detail=f"Unexpected error: {str(e)}") from e
 
     async def update_category(self, category: Category) -> Category:
-        """
-        Updates a category
+        """Updates a category in the database.
 
         Args:
-            category (Category): _description_
+            category (Category): The updated Category object.
+
+        Returns:
+            Category: The updated Category object.
         """
-
         try:
-            category = await self.category_service.put(category.id, category)
+            return await self.category_service.put(category.id, category)
         except ServiceException as e:
-            message = e
-            raise ControllerException(
-                detail=f"There is an issue with the category service: {message}"
-            ) from e
+            raise ControllerException(detail=f"Service error: {str(e)}") from e
         except Exception as e:
-            raise ControllerException(detail=e) from e
-
-        return category
+            raise ControllerException(detail=f"Unexpected error: {str(e)}") from e

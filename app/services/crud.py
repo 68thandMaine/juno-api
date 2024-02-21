@@ -4,6 +4,7 @@ from uuid import UUID
 from sqlmodel import SQLModel, select
 
 from app.db.juno_db import get_session
+from app.lib.constants import CANNOT_UPDATE
 from app.lib.exceptions import ServiceException
 from app.lib.utils.time import convert_str_to_datetime
 
@@ -16,6 +17,10 @@ class CRUDService:
     def __init__(self, model: Type[SQLModel]):
         self._session = get_session
         self.model = model
+
+    async def _get_by_model_id(self, session, model_id):
+        statement = select(self.model).where(self.model.id == model_id)
+        return await session.scalar(statement)
 
     async def _add_to_database(self, session, data):
         """
@@ -54,12 +59,9 @@ class CRUDService:
         """
         try:
             async for session in self._session():
-                statement = select(self.model).where(self.model.id == model_id)
-                db_data = await session.scalar(statement)
+                db_data = await self._get_by_model_id(session, model_id)
                 if not db_data:
-                    raise ServiceException(
-                        f"Cannot update because no data with id {model_id} can be found"
-                    )
+                    raise ServiceException(f"{CANNOT_UPDATE} {model_id}")
                 for k, v in data.model_dump().items():  # type: ignore
                     if k == "due_date" and isinstance(v, str):
                         v = convert_str_to_datetime(v)
@@ -76,20 +78,20 @@ class CRUDService:
         """
         try:
             async for session in self._session():
-                statement = select(self.model).where(self.model.id == model_id)
-                data = await session.scalar(statement)
-                await session.close()
+                return await self._get_by_model_id(session, model_id)
         except Exception as e:
             raise ServiceException(e) from e
-        return data
 
     async def delete(self, model_id: UUID):
+        """Used to delete a resource from a database
+
+        Args:
+            model_id (UUID): the id for the entity being removed from the database
+        """
         try:
             async for session in self._session():
-                statement = select(self.model).where(self.model.id == model_id)
-                result = await session.scalar(statement)
+                result = await self._get_by_model_id(session, model_id)
                 await session.delete(result)
-                await session.close()
                 return True
         except Exception as e:
             raise ServiceException(e) from e

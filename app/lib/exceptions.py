@@ -1,6 +1,10 @@
+from sqlalchemy.orm.exc import NoResultFound
+
+
 class ServiceException(Exception):
     """
-    Class used to relay a failure message when a service in
+    Class used to
+    relay a failure message when a service in
     juno fails for some reason.
     """
 
