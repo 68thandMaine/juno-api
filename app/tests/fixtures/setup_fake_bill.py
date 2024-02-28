@@ -3,15 +3,17 @@ import copy
 import pytest
 
 from app.models import Bill
-from app.tests.fixtures.fake_data import bill_for_tests
+from app.tests.mocks.fake_data import bill_for_tests
 
 
 @pytest.fixture
 def setup_fake_bill():
+    """Returns a Bill object."""
+
     def _setup_fake_bill(overrides=None):
         fake_bill = copy.copy(bill_for_tests)
         if overrides:
             fake_bill.update(overrides)
-        return Bill(**fake_bill)
+        return fake_bill
 
     return _setup_fake_bill

@@ -11,12 +11,12 @@ from app.db.juno_db import get_session
 from app.main import app
 
 
-@pytest.fixture(scope="session")
-def event_loop():
-    policy = asyncio.get_event_loop_policy()
-    loop = policy.new_event_loop()
-    yield loop
-    loop.close()
+# @pytest.fixture(scope="session")
+# def event_loop():
+#     loop = asyncio.get_event_loop()
+
+#     yield loop
+#     loop.close()
 
 
 @pytest_asyncio.fixture

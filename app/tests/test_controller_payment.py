@@ -1,20 +1,13 @@
-# Test for Error emitted
-
-# Test for shape of data created
-from unittest.mock import MagicMock
+from unittest.mock import AsyncMock
 
 import pytest
 
 from app.controllers.payment_controller import PaymentController
 from app.lib.constants import PAYMENT_ERROR_BILL_ID_NOT_FOUND
-from app.lib.exceptions import ControllerException
+from app.lib.exceptions import ControllerException, ServiceException
 from app.models import Payment
-from app.tests.fixtures.fake_data import payment_for_tests
-
-
-@pytest.fixture
-def payment_controller():
-    return PaymentController()
+from app.tests.mocks.fake_data import payment_for_tests
+from app.tests.fixtures.app_fixtures import payment_controller
 
 
 @pytest.mark.asyncio
@@ -32,7 +25,7 @@ async def test_make_payment_raises_not_found_if_bill_does_not_exist(
     assert expected in str(exception.value)
 
 
-@pytest.mark.runonly
+@pytest.mark.asyncio
 async def test_make_payment_returns_payment_when_successful(
     payment_controller: PaymentController, mocker
 ):
@@ -46,3 +39,19 @@ async def test_make_payment_returns_payment_when_successful(
     result = await payment_controller.make_payment(data=Payment(**payment_for_tests))
 
     assert isinstance(result, Payment)
+
+
+@pytest.mark.asyncio
+async def test_get_payments_raises_controller_issue_for_service_exceptions(
+    payment_controller: PaymentController,
+):
+    payment_controller.payment_service.get = AsyncMock(
+        side_effect=ServiceException("Service error")
+    )
+
+    with pytest.raises(ControllerException) as exc_info:
+        await payment_controller.get_payments()
+    assert (
+        "There was an issue with the payment service when getting a payment: Service error"
+        in str(exc_info.value)
+    )

@@ -5,7 +5,7 @@ import pytest
 from app.controllers.bill_controller import BillController
 from app.lib.exceptions import ControllerException
 from app.models.bill import Bill, BillUpdate
-from app.tests.fixtures.fake_data import bill_for_tests
+from app.tests.mocks.fake_data import bill_for_tests
 from app.tests.fixtures.setup_fake_bill import setup_fake_bill
 
 

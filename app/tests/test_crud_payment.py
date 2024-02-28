@@ -6,7 +6,7 @@ from httpx import AsyncClient
 from app.lib.constants import PAYMENT_ERROR_BILL_ID_NOT_FOUND
 from app.lib.utils.time import convert_str_to_datetime
 from app.models.all import Payment
-from app.tests.fixtures.fake_data import bill_for_tests, payment_for_tests
+from app.tests.mocks.fake_data import bill_for_tests, payment_for_tests
 
 
 # ! Turn this into a utility function because it's used in test_crud_bills as well

@@ -19,9 +19,9 @@ async def get_categories(controller=Depends(CategoryController)) -> list[Categor
     belong to.
     """
     try:
-        return await controller.get()
+        return await controller.get_categories()
     except Exception as e:
-        handle_router_exception(e)
+        await handle_router_exception(e)
 
 
 @router.post("/", operation_id="new_category", response_model=Category)
@@ -34,7 +34,7 @@ async def new_category(
     try:
         return await controller.add_category(category)
     except Exception as e:
-        handle_router_exception(e)
+        await handle_router_exception(e)
 
 
 @router.put("/{category_id}", operation_id="update_category", response_model=Category)
@@ -48,4 +48,4 @@ async def update_category(
     try:
         return await controller.update_category(category)
     except Exception as e:
-        handle_router_exception(e)
+        await handle_router_exception(e)

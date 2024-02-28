@@ -1,13 +1,11 @@
-from unittest.mock import AsyncMock
 from uuid import uuid4
 
 import pytest
 from httpx import AsyncClient
 
-from app.controllers.bill_controller import BillController
 from app.lib.exceptions import ControllerException
 from app.models import Bill
-from app.tests.fixtures.fake_data import bill_for_tests
+from app.tests.mocks.fake_data import bill_for_tests
 from app.tests.fixtures.setup_fake_bill import setup_fake_bill
 
 BILL_ENDPOINT = "bills/"
@@ -23,8 +21,7 @@ async def test_get_bills_returns_200_when_successful(async_client: AsyncClient):
 async def test_get_bills_returns_500_when_unsuccessful(
     async_client: AsyncClient, monkeypatch
 ):
-    # Arrange
-    async def mock_get_bills(_):
+    async def mock_get_bills():
         raise ControllerException(status_code=500, detail="Some error message")
 
     monkeypatch.setattr(

@@ -21,6 +21,7 @@ class CategoryController:
         """
         try:
             return await self.category_service.get()
+
         except ServiceException as e:
             raise ControllerException(detail=f"Service error: {str(e)}") from e
         except Exception as e:

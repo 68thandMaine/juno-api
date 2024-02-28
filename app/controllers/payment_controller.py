@@ -56,7 +56,7 @@ class PaymentController:
             results = await self.payment_service.get()
         except ServiceException as e:
             raise ControllerException(
-                f"There was an issue with the payment service when getting a payment: \n{e}"
+                f"There was an issue with the payment service when getting a payment: {e}"
             ) from e
         except Exception as e:
             raise ControllerException(e) from e

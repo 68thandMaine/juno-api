@@ -4,7 +4,7 @@ from sqlalchemy.exc import IntegrityError
 
 from app.lib.exceptions import ControllerException, ServiceException
 from app.lib.utils.time import convert_str_to_datetime
-from app.models import Bill, BillCreate, Category, RecurringBill
+from app.models import Bill, BillCreate, Category, RecurringBill, BillUpdate
 from app.services.crud import CRUDService
 
 
@@ -115,7 +115,7 @@ class BillController:
             ) from e
         return found_bill
 
-    async def update_bill(self, bill: Bill) -> Bill:
+    async def update_bill(self, bill: BillUpdate) -> Bill:
         """
         Updates a bill
 
@@ -124,6 +124,9 @@ class BillController:
 
         Can be used to delete/archive bills
         """
+        bill = Bill(**bill.model_dump())
+        bill.id = UUID(bill.id)
+        bill.due_date = convert_str_to_datetime(bill.due_date)
         db_bill = await self.bill_service.get_one(bill.id)
         if not db_bill:
             raise ValueError(f"No bill with id {bill.id} was found")

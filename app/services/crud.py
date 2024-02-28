@@ -38,9 +38,9 @@ class CRUDService:
         try:
             async for session in self._session():
                 results = await session.scalars(select(self.model))
+                return results.all() if results else []
         except Exception as e:
             raise ServiceException(e) from e
-        return results.all() if results else []
 
     async def create(self, data: Type[SQLModel]):
         """
