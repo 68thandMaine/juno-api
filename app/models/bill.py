@@ -16,8 +16,9 @@ class BillBase(CamelCaseModel):
     name: str
     amount: int
     due_date: datetime
-    status: Optional[int]
+    paid: Optional[int]
     category: Optional[UUID] = Field(default=None, foreign_key="category.id")
+    autoPay: bool
     # notes: Optional[str]
     # payment_method: UUID = Field(default=None, foreign_key="account.id")
     # archived: Optional[bool] = Field(default=False)
