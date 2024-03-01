@@ -69,7 +69,7 @@ class BillController:
             Bill: Bill object that was added to the database.
         """
         try:
-            category = new_bill.category
+            category = getattr(new_bill, "category", None)
             if category and not await self.category_service.get_one(category):
                 raise ValueError("Category does not exist")
 
@@ -125,9 +125,8 @@ class BillController:
         Can be used to delete/archive bills
         """
         bill = Bill(**bill.model_dump())
-        bill.id = UUID(bill.id)
-        bill.due_date = convert_str_to_datetime(bill.due_date)
         db_bill = await self.bill_service.get_one(bill.id)
+
         if not db_bill:
             raise ValueError(f"No bill with id {bill.id} was found")
 

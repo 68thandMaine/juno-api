@@ -1,12 +1,8 @@
 import uuid
 from unittest.mock import MagicMock
-
 import pytest
-from fastapi import HTTPException
 from httpx import AsyncClient
-
 from app.lib.exceptions import ControllerException
-from app.tests.mocks.fake_data import bill_for_tests
 from app.tests.fixtures.setup_fake_bill import setup_fake_bill
 
 
@@ -103,7 +99,6 @@ async def test_update_bill_returns_bill_with_updated_data(
     bill = created_bill.json()
     bill["name"] = new_name
     
-
     result = await async_client.put(f"bills/update/{bill["id"]}", json=bill)
     
     assert result.status_code == 200
