@@ -5,9 +5,10 @@ bill_for_tests = {
     "amount": 12,
     "due_date": datetime.date.today().strftime("%Y-%m-%d"),  # < this is a string
     "category": None,
-    "status": 1,
+    "paid": 1,
     "recurring": False,
     "recurrence_interval": None,
+    "auto_pay": False,
 }
 
 payment_for_tests = {
