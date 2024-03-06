@@ -6,8 +6,8 @@ from app.controllers.payment_controller import PaymentController
 from app.lib.constants import PAYMENT_ERROR_BILL_ID_NOT_FOUND
 from app.lib.exceptions import ControllerException, ServiceException
 from app.models import Payment
-from app.tests.mocks.fake_data import payment_for_tests
 from app.tests.fixtures.app_fixtures import payment_controller
+from app.tests.mocks.fake_data import payment_for_tests
 
 
 @pytest.mark.asyncio

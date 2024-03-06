@@ -28,6 +28,6 @@ async def test_service_deletes_data_by_model_id():
     category = Category(name="TEST_CATEGORY")
     await crud_service.create(category)
 
-    # found_category = await crud_service.get_one(category.id)
-    # deleted = await crud_service.delete(found_category.id)
-    # assert deleted is (True)
+    found_category = await crud_service.get_one(category.id)
+    deleted = await crud_service.delete(found_category.id)
+    assert deleted is (True)

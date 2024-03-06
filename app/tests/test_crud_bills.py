@@ -1,7 +1,9 @@
 import uuid
 from unittest.mock import MagicMock
+
 import pytest
 from httpx import AsyncClient
+
 from app.lib.exceptions import ControllerException
 from app.tests.fixtures.setup_fake_bill import setup_fake_bill
 
@@ -33,7 +35,7 @@ async def test_add_bill_throws_error_if_date_is_incorrect(
     async_client: AsyncClient, expected_exception, setup_fake_bill, overrides
 ):
     fake_bill = setup_fake_bill(overrides)
-
+    
     with pytest.raises(Exception) as excinfo:
         await async_client.post("bills/", json=fake_bill)
 

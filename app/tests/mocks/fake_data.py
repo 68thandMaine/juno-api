@@ -1,6 +1,8 @@
 import datetime
+from uuid import uuid4
 
 bill_for_tests = {
+    "id": str(uuid4()),
     "name": "TEST_BILL",
     "amount": 12,
     "due_date": datetime.date.today().strftime("%Y-%m-%d"),  # < this is a string

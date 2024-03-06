@@ -11,12 +11,14 @@ from app.db.juno_db import get_session
 from app.main import app
 
 
-# @pytest.fixture(scope="session")
-# def event_loop():
-#     loop = asyncio.get_event_loop()
-
-#     yield loop
-#     loop.close()
+@pytest.fixture(scope="session")
+def event_loop():
+    try:
+        loop = asyncio.get_running_loop()
+    except RuntimeError:
+        loop = asyncio.new_event_loop()
+    yield loop
+    loop.close()
 
 
 @pytest_asyncio.fixture
@@ -25,7 +27,7 @@ async def async_client():
         yield client
 
 
-@pytest_asyncio.fixture(scope="function")
+@pytest_asyncio.fixture()
 async def async_session() -> AsyncGenerator:
     return get_session()
 

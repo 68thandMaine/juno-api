@@ -4,7 +4,7 @@ from sqlalchemy.exc import IntegrityError
 
 from app.lib.exceptions import ControllerException, ServiceException
 from app.lib.utils.time import convert_str_to_datetime
-from app.models import Bill, BillCreate, Category, RecurringBill, BillUpdate
+from app.models import Bill, BillCreate, BillUpdate, Category, RecurringBill
 from app.services.crud import CRUDService
 
 
@@ -45,7 +45,8 @@ class BillController:
                 amount=data.amount,
                 due_date=convert_str_to_datetime(data.due_date),
                 category=data.category,
-                status=data.status,
+                paid=data.paid,
+                auto_pay=data.auto_pay,
             )
         except ValueError as e:
             raise ControllerException(
@@ -72,8 +73,8 @@ class BillController:
             category = getattr(new_bill, "category", None)
             if category and not await self.category_service.get_one(category):
                 raise ValueError("Category does not exist")
-
             bill = self._create_bill(new_bill)
+
             await self.bill_service.create(bill)
             recurring = getattr(new_bill, "recurring", "")
 
@@ -125,11 +126,11 @@ class BillController:
         Can be used to delete/archive bills
         """
         bill = Bill(**bill.model_dump())
+
         db_bill = await self.bill_service.get_one(bill.id)
 
         if not db_bill:
             raise ValueError(f"No bill with id {bill.id} was found")
-
         for key in db_bill.model_dump().keys():
             update_value = getattr(bill, key)
             setattr(db_bill, key, update_value)

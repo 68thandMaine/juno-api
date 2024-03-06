@@ -5,8 +5,8 @@ import pytest
 from app.controllers.bill_controller import BillController
 from app.lib.exceptions import ControllerException
 from app.models.bill import Bill, BillUpdate
-from app.tests.mocks.fake_data import bill_for_tests
 from app.tests.fixtures.setup_fake_bill import setup_fake_bill
+from app.tests.mocks.fake_data import bill_for_tests
 
 
 @pytest.fixture
@@ -27,7 +27,10 @@ async def test_add_bill_returns_bill_instance(
     "overrides, expected_exception",
     [
         ({"due_date": "DATE"}, "Invalid isoformat string: 'DATE'"),
-        ({"category": "UUID"}, "invalid UUID"),
+        (
+            {"category": "UUID"},
+            "There was an error with a value when creating a new bill",
+        ),
     ],
 )
 @pytest.mark.asyncio
@@ -50,17 +53,16 @@ async def test_get_bills_returns_a_list_of_bills(
     assert isinstance(result[0], Bill)
 
 
-@pytest.mark.asyncio
+@pytest.mark.asyncio()
 async def test_get_one_bill_returns_a_bill_instance(
     bill_controller: BillController, setup_fake_bill
 ):
     bill = await bill_controller.add_bill(new_bill=setup_fake_bill())
-    target_bill = bill.model_dump()
-    result = await bill_controller.get_one_bill(target_bill["id"])
-    returned_bill = result.model_dump()
-    assert isinstance(result, Bill)
 
-    assert returned_bill == target_bill
+    result = await bill_controller.get_one_bill(bill.id)
+
+    assert isinstance(result, Bill)
+    assert result == bill
 
 
 @pytest.mark.asyncio
@@ -77,23 +79,25 @@ async def test_update_bill_raises_value_error_if_id_is_not_valid(
     bill_controller: BillController, setup_fake_bill
 ):
     fake_bill = setup_fake_bill()
-    fake_bill = fake_bill.model_dump()
     fake_bill["id"] = str(fake_bill["id"])
     fake_bill = {**bill_for_tests, **fake_bill}
     fake_bill = BillUpdate(**fake_bill)
 
     with pytest.raises(ValueError) as excinfo:
         await bill_controller.update_bill(bill=fake_bill)
-    exception_message = str(excinfo)
+    exception_message = str(excinfo.value)
+
     assert f"No bill with id {fake_bill.id} was found" in exception_message
 
 
+@pytest.mark.runonly
 @pytest.mark.asyncio
 async def test_update_bill_returns_updated_bill_if_successful(
     bill_controller: BillController, setup_fake_bill
 ):
     updated_name = "TEST_UPDATE_NAME"
     existing_bill = await bill_controller.add_bill(new_bill=setup_fake_bill())
+
     existing_bill.name = updated_name
     result = await bill_controller.update_bill(existing_bill)
 

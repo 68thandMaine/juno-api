@@ -1,6 +1,7 @@
 import pytest
-from app.controllers.payment_controller import PaymentController
+
 from app.controllers.category_controller import CategoryController
+from app.controllers.payment_controller import PaymentController
 
 
 @pytest.fixture
