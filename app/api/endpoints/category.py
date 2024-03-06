@@ -2,6 +2,11 @@ from fastapi import APIRouter, Depends, HTTPException
 
 from app.controllers.category_controller import CategoryController
 from app.models import Category, CategoryInput
+from app.exceptions.crud import (
+    handle_get_entity_exception,
+    handle_post_entity_exception,
+    handle_update_entity_exception,
+)
 
 router = APIRouter(prefix="/category")
 
@@ -21,7 +26,7 @@ async def get_categories(controller=Depends(CategoryController)) -> list[Categor
     try:
         return await controller.get_categories()
     except Exception as e:
-        await handle_router_exception(e)
+        await handle_get_entity_exception(e, "category")
 
 
 @router.post("/", operation_id="new_category", response_model=Category)
@@ -34,7 +39,7 @@ async def new_category(
     try:
         return await controller.add_category(category)
     except Exception as e:
-        await handle_router_exception(e)
+        await handle_post_entity_exception(e, "new_category")
 
 
 @router.put("/{category_id}", operation_id="update_category", response_model=Category)
@@ -48,4 +53,4 @@ async def update_category(
     try:
         return await controller.update_category(category)
     except Exception as e:
-        await handle_router_exception(e)
+        await handle_update_entity_exception(e)

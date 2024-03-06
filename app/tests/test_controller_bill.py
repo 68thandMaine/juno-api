@@ -90,7 +90,6 @@ async def test_update_bill_raises_value_error_if_id_is_not_valid(
     assert f"No bill with id {fake_bill.id} was found" in exception_message
 
 
-@pytest.mark.runonly
 @pytest.mark.asyncio
 async def test_update_bill_returns_updated_bill_if_successful(
     bill_controller: BillController, setup_fake_bill
