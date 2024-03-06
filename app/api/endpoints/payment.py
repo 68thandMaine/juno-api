@@ -1,24 +1,15 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends
 
 from app.controllers.payment_controller import PaymentController
-from app.lib.exceptions import ControllerException
-from app.lib.utils.time import convert_str_to_datetime
+from app.core.lib.exceptions import ControllerException
+from app.core.lib.utils.time import convert_str_to_datetime
 from app.models import Payment
+from app.core.exceptions.crud import (
+    handle_get_entity_exception,
+    handle_post_entity_exception,
+)
 
 router = APIRouter(prefix="/payment")
-
-
-async def handle_get_payments_exception(e: Exception):
-    raise HTTPException(
-        status_code=500,
-        detail=f"Error getting payments using payment controller: {str(e)}",
-    ) from e
-
-
-async def handle_new_payment_exception(e: Exception):
-    raise HTTPException(
-        status_code=e.status_code, detail=f"Failed to create payment: {str(e)}"
-    ) from e
 
 
 @router.get("/", operation_id="get_payments", response_model=list[Payment])
@@ -26,9 +17,9 @@ async def get_payments(controller=Depends(PaymentController)) -> list[Payment]:
     try:
         return await controller.get_payments()
     except ControllerException as e:
-        await handle_get_payments_exception(e)
+        await handle_get_entity_exception(e, "payment")
     except Exception as e:
-        await handle_get_payments_exception(e)
+        await handle_get_entity_exception(e, "payment")
 
 
 @router.post("/", operation_id="new_payment", response_model=Payment)
@@ -43,8 +34,8 @@ async def new_payment(
     except ControllerException as e:
         if "cannot be found" in e.detail:
             e.status_code = 412
-        await handle_new_payment_exception(e)
+        await handle_post_entity_exception(e, "new category")
     except Exception as e:
-        await handle_new_payment_exception(e)
+        await handle_post_entity_exception(e, "new category")
 
     return payment

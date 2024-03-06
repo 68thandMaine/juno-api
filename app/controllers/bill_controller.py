@@ -2,9 +2,13 @@ from uuid import UUID
 
 from sqlalchemy.exc import IntegrityError
 
-from app.lib.exceptions import ControllerException, ServiceException
-from app.lib.utils.time import convert_str_to_datetime
-from app.models import Bill, BillCreate, BillUpdate, Category, RecurringBill
+from app.core.lib.exceptions import ControllerException, ServiceException
+from app.core.exceptions.controller import (
+    handle_error_in_service,
+    handle_generic_exception,
+)
+from app.core.lib.utils.time import convert_str_to_datetime
+from app.models import Bill, BillCreate, Category, RecurringBill, BillUpdate
 from app.services.crud import CRUDService
 
 
@@ -22,18 +26,24 @@ class BillController:
         self.recurring_bill_service = CRUDService(RecurringBill)
 
     async def _add_recurring_bill(self, bill, recurrence_interval):
+        """
+        Add a recurring bill to the database for the specified bill.
+
+        Args:
+            bill: The bill for which the recurring bill is added.
+            recurrence_interval (str): The recurrence interval for the recurring bill.
+
+        Raises:
+            ControllerException: If there is an error creating or adding the recurring bill.
+        """
         try:
             await self.recurring_bill_service.create(
                 RecurringBill(bill_id=bill.id, recurrence_interval=recurrence_interval)
             )
         except ServiceException as e:
-            raise ControllerException(
-                detail=f"There was an error creating recurring bill with the bill service: {str(e)}"
-            ) from e
+            handle_error_in_service(e, "add recurring bill")
         except Exception as e:
-            raise ControllerException(
-                f"There was an error adding a recurring bill: \n {e}"
-            ) from e
+            handle_generic_exception(e, "add recurring bill")
 
     def _create_bill(self, data: BillCreate) -> Bill:
         try:
@@ -53,7 +63,7 @@ class BillController:
                 detail=f"There was an error with a value when creating a new bill: {e}"
             ) from e
         except Exception as e:
-            raise ControllerException(detail=e) from e
+            handle_generic_exception(e, "_create_bill")
 
     async def add_bill(self, new_bill: BillCreate) -> Bill:
         """
@@ -71,11 +81,13 @@ class BillController:
         """
         try:
             category = getattr(new_bill, "category", None)
+
             if category and not await self.category_service.get_one(category):
                 raise ValueError("Category does not exist")
-            bill = self._create_bill(new_bill)
 
+            bill = self._create_bill(new_bill)
             await self.bill_service.create(bill)
+
             recurring = getattr(new_bill, "recurring", "")
 
             if recurring and getattr(bill, "id"):
@@ -126,7 +138,7 @@ class BillController:
         Can be used to delete/archive bills
         """
         bill = Bill(**bill.model_dump())
-
+        bill.id = UUID(bill.id).hex
         db_bill = await self.bill_service.get_one(bill.id)
 
         if not db_bill:
@@ -136,7 +148,7 @@ class BillController:
             setattr(db_bill, key, update_value)
 
         try:
-            updated_bill = await self.bill_service.put(db_bill.id, db_bill)
+            updated_bill = await self.bill_service.put(UUID(db_bill.id).hex, db_bill)
         except Exception as e:
             raise ControllerException(
                 detail=f"There has been an error updating a bill: \n {e}"

@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from app.lib.exceptions import ControllerException, ServiceException
+from app.core.lib.exceptions import ControllerException, ServiceException
 from app.models import Bill
 from app.services.recurring_bill_service import RecurringBillService
 

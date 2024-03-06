@@ -3,7 +3,7 @@ from uuid import uuid4
 import pytest
 from httpx import AsyncClient
 
-from app.lib.exceptions import ControllerException
+from app.core.lib.exceptions import ControllerException
 from app.models import Bill
 from app.tests.fixtures.setup_fake_bill import setup_fake_bill
 from app.tests.mocks.fake_data import bill_for_tests

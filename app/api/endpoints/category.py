@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 
 from app.controllers.category_controller import CategoryController
 from app.models import Category, CategoryInput
-from app.exceptions.crud import (
+from app.core.exceptions.crud import (
     handle_get_entity_exception,
     handle_post_entity_exception,
     handle_update_entity_exception,
@@ -53,4 +53,4 @@ async def update_category(
     try:
         return await controller.update_category(category)
     except Exception as e:
-        await handle_update_entity_exception(e)
+        await handle_update_entity_exception(e, "update category")

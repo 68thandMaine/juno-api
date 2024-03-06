@@ -1,5 +1,3 @@
-from sqlmodel import select
-
 from app.models import RecurringBill
 from app.services.crud import CRUDService
 

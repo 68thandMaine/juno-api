@@ -1,6 +1,6 @@
 from uuid import UUID
 
-from app.lib.exceptions import ControllerException, ServiceException
+from app.core.lib.exceptions import ControllerException, ServiceException
 from app.models import Category
 from app.services.crud import CRUDService
 

@@ -33,7 +33,7 @@ async def async_session() -> AsyncGenerator:
 
 
 @pytest.fixture(scope="session", autouse=True)
-def cleanup_test_database(request):
+def cleanup_test_database():
     connection = psycopg2.connect(
         dbname="juno_db_test",
         user=settings.db_username,

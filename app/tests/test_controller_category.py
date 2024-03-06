@@ -3,8 +3,8 @@ from uuid import uuid4
 import pytest
 
 from app.controllers.category_controller import CategoryController
-from app.lib.constants import CANNOT_UPDATE
-from app.lib.exceptions import ControllerException, ServiceException
+from app.core.lib.constants import CANNOT_UPDATE
+from app.core.lib.exceptions import ControllerException, ServiceException
 from app.models import Category
 from app.services.crud import CRUDService
 

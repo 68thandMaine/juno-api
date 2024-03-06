@@ -1,7 +1,7 @@
 from uuid import UUID
 
-from app.lib.constants import PAYMENT_ERROR_BILL_ID_NOT_FOUND
-from app.lib.exceptions import ControllerException, NoResultFound, ServiceException
+from app.core.lib.constants import PAYMENT_ERROR_BILL_ID_NOT_FOUND
+from app.core.lib.exceptions import ControllerException, NoResultFound, ServiceException
 from app.models import Bill, Payment
 from app.services.crud import CRUDService
 

@@ -26,6 +26,7 @@ async def handle_update_entity_exception(e: Exception, entity: str):
     Raises:
         HTTPException: Resolves to a generic error message for the router method.
     """
+    entity = "hi"
     raise HTTPException(
         status_code=500, detail=f"Failed to UPDATE {entity} because => {str(e)}"
     )

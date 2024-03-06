@@ -4,9 +4,9 @@ from uuid import UUID
 from sqlmodel import SQLModel, select
 
 from app.db.juno_db import get_session
-from app.lib.constants import CANNOT_UPDATE
-from app.lib.exceptions import ServiceException
-from app.lib.utils.time import convert_str_to_datetime
+from app.core.lib.constants import CANNOT_UPDATE
+from app.core.lib.exceptions import ServiceException
+from app.core.lib.utils.time import convert_str_to_datetime
 
 
 class CRUDService:

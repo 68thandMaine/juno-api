@@ -3,7 +3,7 @@ import uuid
 import pytest
 
 from app.controllers.bill_controller import BillController
-from app.lib.exceptions import ControllerException
+from app.core.lib.exceptions import ControllerException
 from app.models.bill import Bill, BillUpdate
 from app.tests.fixtures.setup_fake_bill import setup_fake_bill
 from app.tests.mocks.fake_data import bill_for_tests

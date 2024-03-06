@@ -4,7 +4,7 @@ from unittest.mock import MagicMock
 import pytest
 from httpx import AsyncClient
 
-from app.lib.exceptions import ControllerException
+from app.core.lib.exceptions import ControllerException
 from app.tests.fixtures.setup_fake_bill import setup_fake_bill
 
 

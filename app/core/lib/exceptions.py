@@ -1,3 +1,6 @@
+from sqlalchemy.orm.exc import NoResultFound
+
+
 class ServiceException(Exception):
     """
     Class used to
