@@ -23,7 +23,6 @@ async def test_service_gets_table_data_for_model(models):
 
 @pytest.mark.asyncio
 async def test_service_deletes_data_by_model_id():
-    # * Create an entry in the database
     crud_service = CRUDService(model=Category)
     category = Category(name="TEST_CATEGORY")
     await crud_service.create(category)

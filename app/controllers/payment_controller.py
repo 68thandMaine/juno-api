@@ -1,9 +1,14 @@
 from uuid import UUID
 
 from app.core.lib.constants import PAYMENT_ERROR_BILL_ID_NOT_FOUND
-from app.core.lib.exceptions import ControllerException, NoResultFound, ServiceException
+from app.core.lib.exceptions import NoResultFound, ServiceException
 from app.models import Bill, Payment
 from app.services.crud import CRUDService
+from app.core.exceptions.controller import (
+    handle_error_in_service,
+    handle_generic_exception,
+    handle_not_found_exception,
+)
 
 
 class PaymentController:
@@ -38,26 +43,20 @@ class PaymentController:
             bill_exists = await self._verify_bill_exists(data.bill_id)
             if bill_exists:
                 return await self.payment_service.create(data)
-        except NoResultFound as e:
-            raise ControllerException(
-                status_code=412,
-                detail=PAYMENT_ERROR_BILL_ID_NOT_FOUND,
-            ) from e
+        except NoResultFound:
+            handle_not_found_exception(PAYMENT_ERROR_BILL_ID_NOT_FOUND)
+
         except ServiceException as e:
-            raise ControllerException(
-                f"There was an issue with the payment service when making a payment: {e}"
-            ) from e
+            handle_error_in_service(e, "payment_service.create")
         except Exception as e:
-            raise ControllerException(detail=e) from e
+            handle_generic_exception(e, "make_payment")
 
     async def get_payments(self) -> list[Payment]:
         """Returns a list of payments"""
         try:
             results = await self.payment_service.get()
         except ServiceException as e:
-            raise ControllerException(
-                f"There was an issue with the payment service when getting a payment: {e}"
-            ) from e
+            handle_error_in_service(e, "payment_service.get")
         except Exception as e:
-            raise ControllerException(e) from e
+            handle_generic_exception(e, "get_payments")
         return results

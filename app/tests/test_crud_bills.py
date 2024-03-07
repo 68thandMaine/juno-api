@@ -35,7 +35,7 @@ async def test_add_bill_throws_error_if_date_is_incorrect(
     async_client: AsyncClient, expected_exception, setup_fake_bill, overrides
 ):
     fake_bill = setup_fake_bill(overrides)
-    
+
     with pytest.raises(Exception) as excinfo:
         await async_client.post("bills/", json=fake_bill)
 
@@ -90,6 +90,7 @@ async def test_get_bills_returns_a_200_when_successful(async_client: AsyncClient
     result = await async_client.get("bills/")
     assert result.status_code == 200
 
+
 @pytest.mark.asyncio
 async def test_update_bill_returns_bill_with_updated_data(
     async_client: AsyncClient,
@@ -100,8 +101,8 @@ async def test_update_bill_returns_bill_with_updated_data(
     new_name = "Verizon"
     bill = created_bill.json()
     bill["name"] = new_name
-    
-    result = await async_client.put(f"bills/update/{bill["id"]}", json=bill)
-    
+    bill_id = bill["id"]
+    result = await async_client.put(f"bills/update/{bill_id}", json=bill)
+
     assert result.status_code == 200
     assert result.json()["name"] == new_name

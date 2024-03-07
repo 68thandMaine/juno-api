@@ -6,6 +6,7 @@ from app.core.lib.exceptions import ControllerException, ServiceException
 from app.core.exceptions.controller import (
     handle_error_in_service,
     handle_generic_exception,
+    handle_value_error_in_service,
 )
 from app.core.lib.utils.time import convert_str_to_datetime
 from app.models import Bill, BillCreate, Category, RecurringBill, BillUpdate
@@ -59,9 +60,7 @@ class BillController:
                 auto_pay=data.auto_pay,
             )
         except ValueError as e:
-            raise ControllerException(
-                detail=f"There was an error with a value when creating a new bill: {e}"
-            ) from e
+            handle_value_error_in_service(e)
         except Exception as e:
             handle_generic_exception(e, "_create_bill")
 
@@ -99,10 +98,13 @@ class BillController:
             msg = e
             if isinstance(e, IntegrityError):
                 msg = str(e.orig)
+                raise ControllerException(detail=msg) from e
 
-            raise ControllerException(
-                f" Error adding bill to database ==> {msg}"
-            ) from e
+            if isinstance(e, ValueError):
+                handle_value_error_in_service(msg)
+
+            if isinstance(e, ServiceException):
+                handle_value_error_in_service(msg)
 
         return bill
 
@@ -122,10 +124,8 @@ class BillController:
         """
         try:
             found_bill = await self.bill_service.get_one(bill_id)
-        except Exception as e:
-            raise ControllerException(
-                f"There has been an unexpected issue getting a bill: {e}"
-            ) from e
+        except ServiceException as e:
+            handle_value_error_in_service(e)
         return found_bill
 
     async def update_bill(self, bill: BillUpdate) -> Bill:
@@ -148,10 +148,7 @@ class BillController:
             setattr(db_bill, key, update_value)
 
         try:
-            updated_bill = await self.bill_service.put(UUID(db_bill.id).hex, db_bill)
+            updated_bill = await self.bill_service.put(UUID(db_bill.id), db_bill)
         except Exception as e:
-            raise ControllerException(
-                detail=f"There has been an error updating a bill: \n {e}"
-            ) from e
-
+            handle_generic_exception(e, "update bill")
         return updated_bill

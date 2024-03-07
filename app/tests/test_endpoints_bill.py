@@ -37,7 +37,6 @@ async def test_get_bills_returns_list_of_bills_when_successful(
     async_client: AsyncClient, setup_fake_bill: setup_fake_bill
 ):
     fake_bill = setup_fake_bill()
-    fake_bill = {**bill_for_tests, **fake_bill}
 
     await async_client.post(BILL_ENDPOINT, json=fake_bill)
 

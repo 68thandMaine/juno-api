@@ -1,8 +1,12 @@
 from datetime import datetime
 
-from app.core.lib.exceptions import ControllerException, ServiceException
+from app.core.lib.exceptions import ServiceException
 from app.models import Bill
 from app.services.recurring_bill_service import RecurringBillService
+from app.core.exceptions.controller import (
+    handle_error_in_service,
+    handle_generic_exception,
+)
 
 
 class RecurringBillController:
@@ -19,8 +23,8 @@ class RecurringBillController:
         try:
             return await self.recurring_bill_service.get_by_recurrence_interval("MONTH")
         except ServiceException as e:
-            raise ControllerException(
-                f"There was an issue with the recurring bill service when getting a this months bills: {e}"
-            ) from e
+            handle_error_in_service(
+                e, "recurring_bill_service.get_by_recurrence_interval"
+            )
         except Exception as e:
-            raise ControllerException(e) from e
+            handle_generic_exception(e, "get_current_months_bills")

@@ -3,6 +3,10 @@ from uuid import UUID
 from app.core.lib.exceptions import ControllerException, ServiceException
 from app.models import Category
 from app.services.crud import CRUDService
+from app.core.exceptions.controller import (
+    handle_error_in_service,
+    handle_generic_exception,
+)
 
 
 class CategoryController:
@@ -23,9 +27,9 @@ class CategoryController:
             return await self.category_service.get()
 
         except ServiceException as e:
-            raise ControllerException(detail=f"Service error: {str(e)}") from e
+            handle_error_in_service(e, "category_service")
         except Exception as e:
-            raise ControllerException(detail=f"Unexpected error: {str(e)}") from e
+            handle_generic_exception(e, "get_categories")
 
     async def add_category(self, category: Category) -> Category:
         """Creates a new category in the database.
@@ -41,9 +45,9 @@ class CategoryController:
         try:
             return await self.category_service.create(category)
         except ServiceException as e:
-            raise ControllerException(detail=f"Service error: {str(e)}") from e
+            handle_error_in_service(e, "category_service")
         except Exception as e:
-            raise ControllerException(detail=f"Unexpected error: {str(e)}") from e
+            handle_generic_exception(e, "add_category")
 
     async def remove_category(self, category_id: UUID):
         """Removes a category from the database.
@@ -72,6 +76,6 @@ class CategoryController:
         try:
             return await self.category_service.put(category.id, category)
         except ServiceException as e:
-            raise ControllerException(detail=f"Service error: {str(e)}") from e
+            handle_error_in_service(e, "category_service")
         except Exception as e:
-            raise ControllerException(detail=f"Unexpected error: {str(e)}") from e
+            handle_generic_exception(e, "update_category")
