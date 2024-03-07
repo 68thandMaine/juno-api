@@ -1,12 +1,12 @@
 from fastapi import APIRouter, Depends
 
 from app.controllers.bill_controller import BillController
-from app.core.lib.exceptions import ControllerException
-from app.models import Bill, BillCreate, BillUpdate
 from app.core.exceptions.crud import (
     handle_get_entity_exception,
     handle_update_entity_exception,
 )
+from app.core.lib.exceptions import ControllerException
+from app.models import Bill, BillCreate, BillUpdate
 
 router = APIRouter(prefix="/bills")
 

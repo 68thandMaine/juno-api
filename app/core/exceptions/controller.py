@@ -1,5 +1,6 @@
-from app.core.lib.exceptions import ServiceException
 from sqlalchemy.orm.exc import NoResultFound
+
+from app.core.lib.exceptions import ServiceException
 
 
 class ControllerException(Exception):
@@ -35,7 +36,7 @@ async def handle_value_error_in_service(exception: ValueError):
     ) from exception
 
 
-async def handle_not_found_exception(e: NoResultFound):
+async def handle_not_found_exception(e: str):
     raise ControllerException(
         detail=f"There was nothing found during a search: {e}", status_code=412
-    ) from e
+    )

@@ -1,12 +1,12 @@
 from fastapi import APIRouter, Depends, HTTPException
 
 from app.controllers.category_controller import CategoryController
-from app.models import Category, CategoryInput
 from app.core.exceptions.crud import (
     handle_get_entity_exception,
     handle_post_entity_exception,
     handle_update_entity_exception,
 )
+from app.models import Category, CategoryInput
 
 router = APIRouter(prefix="/category")
 

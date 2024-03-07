@@ -34,27 +34,20 @@ async def test_get_bills_returns_500_when_unsuccessful(
 
 @pytest.mark.asyncio
 async def test_get_bills_returns_list_of_bills_when_successful(
-    async_client: AsyncClient, setup_fake_bill: setup_fake_bill
+    async_client: AsyncClient, setup_fake_bill
 ):
-    fake_bill = setup_fake_bill()
-
-    await async_client.post(BILL_ENDPOINT, json=fake_bill)
-
-    result = await async_client.get(BILL_ENDPOINT)
-    result = [Bill(**b) for b in result.json()]
-
+    await async_client.post(BILL_ENDPOINT, json=setup_fake_bill())
+    response = await async_client.get(BILL_ENDPOINT)
+    result = [Bill(**b) for b in response.json()]
     for bill in result:
         assert isinstance(bill, Bill)
 
 
 @pytest.mark.asyncio
 async def test_add_bill_returns_200_when_successful(
-    async_client: AsyncClient, setup_fake_bill: setup_fake_bill
+    async_client: AsyncClient, setup_fake_bill
 ):
-    fake_bill = setup_fake_bill()
-    fake_bill = {**bill_for_tests, **fake_bill}
-
-    result = await async_client.post(BILL_ENDPOINT, json=fake_bill)
+    result = await async_client.post(BILL_ENDPOINT, json=setup_fake_bill())
     assert result.status_code == 200
 
 

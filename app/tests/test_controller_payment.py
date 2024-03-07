@@ -29,14 +29,15 @@ async def test_make_payment_raises_not_found_if_bill_does_not_exist(
 async def test_make_payment_returns_payment_when_successful(
     payment_controller: PaymentController, mocker
 ):
+    mock_data = Payment(**payment_for_tests)
     mocker.patch.object(payment_controller, "_verify_bill_exists", return_value=True)
     mocker.patch.object(
         payment_controller.payment_service,
         "create",
-        return_value=Payment(**payment_for_tests),
+        return_value=mock_data,
     )
 
-    result = await payment_controller.make_payment(data=Payment(**payment_for_tests))
+    result = await payment_controller.make_payment(data=mock_data)
 
     assert isinstance(result, Payment)
 

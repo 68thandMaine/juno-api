@@ -3,10 +3,10 @@ from uuid import UUID
 
 from sqlmodel import SQLModel, select
 
-from app.db.juno_db import get_session
 from app.core.lib.constants import CANNOT_UPDATE
 from app.core.lib.exceptions import ServiceException
 from app.core.lib.utils.time import convert_str_to_datetime
+from app.db.juno_db import get_session
 
 
 class CRUDService:
@@ -38,9 +38,9 @@ class CRUDService:
         try:
             async for session in self._session():
                 results = await session.scalars(select(self.model))
-                return results.all() if results else []
         except Exception as e:
             raise ServiceException(e) from e
+        return results.all() if results else []
 
     async def create(self, data: Type[SQLModel]):
         """
