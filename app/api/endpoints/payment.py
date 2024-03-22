@@ -29,7 +29,6 @@ async def new_payment(
     try:
         if not isinstance(payment_data, Payment):
             payment_data = Payment(**payment_data)
-        payment_data.payment_date = convert_str_to_datetime(payment_data.payment_date)
         payment = await controller.make_payment(payment_data)
     except ControllerException as e:
         if "cannot be found" in e.detail:

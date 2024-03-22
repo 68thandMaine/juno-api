@@ -30,13 +30,11 @@ async def handle_error_in_service(exception: ServiceException, caller_name: str)
     ) from exception
 
 
-async def handle_value_error_in_service(exception: ValueError):
-    raise ControllerException(
-        detail=f"There is an issue with a value: {str(exception)}"
-    ) from exception
+def handle_value_error_in_service(exception):
+    raise ValueError(f"There is an issue with a value: {str(exception)}") from exception
 
 
-async def handle_not_found_exception(e: str):
+def handle_not_found_exception(e):
     raise ControllerException(
         detail=f"There was nothing found during a search: {e}", status_code=412
-    )
+    ) from Exception

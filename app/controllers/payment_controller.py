@@ -1,13 +1,15 @@
 from typing import Union
 from uuid import UUID
 
+from sqlalchemy.orm.exc import NoResultFound
+
 from app.core.exceptions.controller import (
     handle_error_in_service,
     handle_generic_exception,
     handle_not_found_exception,
 )
 from app.core.lib.constants import PAYMENT_ERROR_BILL_ID_NOT_FOUND
-from app.core.lib.exceptions import NoResultFound, ServiceException
+from app.core.lib.exceptions import ServiceException
 from app.models import Bill, Payment
 from app.services.crud import CRUDService
 
@@ -25,7 +27,7 @@ class PaymentController:
         """Verify if a bill with the given ID exists in the database
 
         Args:
-            bill_id (_type_): The ID of the bill to check.
+            bill_id (_type_): The ID of the bill to check.r
 
         Raises:
             NoResultFound: _description_
@@ -35,7 +37,7 @@ class PaymentController:
         """
         found = await self.bill_service.get_one(bill_id)
         if not found:
-            raise NoResultFound
+            raise ValueError("No bill found found")
         return True
 
     async def make_payment(self, data: Payment) -> Union[Payment, None]:
@@ -43,8 +45,8 @@ class PaymentController:
         try:
             bill_exists = await self._verify_bill_exists(data.bill_id)
 
-        except NoResultFound:
-            await handle_not_found_exception(PAYMENT_ERROR_BILL_ID_NOT_FOUND)
+        except ValueError as e:
+            await handle_not_found_exception(e)
         except ServiceException as e:
             await handle_error_in_service(e, "payment_service.create")
         except Exception as e:

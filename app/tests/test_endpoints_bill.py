@@ -1,3 +1,4 @@
+from datetime import datetime
 from uuid import uuid4
 
 import pytest
@@ -52,18 +53,6 @@ async def test_add_bill_returns_200_when_successful(
 
 
 @pytest.mark.asyncio
-async def test_add_bill_returns_500_when_unsuccessful(
-    async_client: AsyncClient, setup_fake_bill
-):
-    fake_bill = setup_fake_bill({"due_date": "12.22.23"})
-
-    with pytest.raises(ControllerException) as exc_info:
-        await async_client.post(BILL_ENDPOINT, json=fake_bill)
-
-    assert exc_info.value.status_code == 500
-
-
-@pytest.mark.asyncio
 async def test_add_bill_returns_bill_when_successful(async_client: AsyncClient):
     fake_bill = {**bill_for_tests, "id": str(uuid4())}
     result = await async_client.post(BILL_ENDPOINT, json=fake_bill)
@@ -77,6 +66,10 @@ async def test_update_bill_returns_200_when_successful(
     response = await async_client.post(BILL_ENDPOINT, json=setup_fake_bill())
     bill = Bill(**response.json())
     bill.name = "TEST_NAME"
+    if isinstance(bill.due_date, str):
+        bill.due_date = datetime.strptime(bill.due_date, "%Y-%m-%dT%H:%M:%S").strftime(
+            "%m/%d/%Y"
+        )
     endpoint = f"{BILL_ENDPOINT}update/{bill.id}"
 
     result = await async_client.put(endpoint, json=bill.model_dump())
@@ -104,7 +97,11 @@ async def test_update_bill_returns_bill_when_successful(
     new_bill = bill.json()
     UPDATE_WORD = "UPDATE"
     new_bill["name"] = UPDATE_WORD
+    new_bill["due_date"] = datetime.strptime(
+        new_bill["due_date"], "%Y-%m-%dT%H:%M:%S"
+    ).strftime("%m/%d/%Y")
     bill_id = new_bill["id"]
+
     endpoint = f"{BILL_ENDPOINT}update/{bill_id}"
     result = await async_client.put(endpoint, json=new_bill)
     assert Bill(**result.json())

@@ -1,11 +1,10 @@
-import datetime
 from uuid import uuid4
 
 bill_for_tests = {
     "id": str(uuid4()),
     "name": "TEST_BILL",
     "amount": 12,
-    "due_date": datetime.date.today().strftime("%Y-%m-%d"),  # < this is a string
+    "due_date": "11/12/2025",
     "category": None,
     "paid": 1,
     "recurring": False,
@@ -15,6 +14,6 @@ bill_for_tests = {
 
 payment_for_tests = {
     "amount": 12.22,
-    "payment_date": datetime.date.today().strftime("%Y-%m-%d"),
+    "payment_date": "11/12/2025",
     "bill_id": None,
 }

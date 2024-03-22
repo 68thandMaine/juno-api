@@ -11,7 +11,13 @@ from app.models import Bill, BillCreate, BillUpdate
 router = APIRouter(prefix="/bills")
 
 
-@router.get("/", operation_id="get_bills", response_model=list[Bill])
+@router.get(
+    "/",
+    operation_id="get_bills",
+    response_model=list[Bill],
+    summary="Get a list of bills",
+    description="Retrieve a list of bills from the database.",
+)
 async def get_bills(controller=Depends(BillController)) -> list[Bill]:
     try:
         return await controller.get_bills()
@@ -19,10 +25,18 @@ async def get_bills(controller=Depends(BillController)) -> list[Bill]:
         await handle_get_entity_exception(e, "bills")
 
 
-@router.post("/", operation_id="add_bill", response_model=Bill)
+@router.post(
+    "/",
+    operation_id="add_bill",
+    response_model=Bill,
+    summary="Add a new bill",
+    description="Create a new bill record in the system.",
+)
 async def add_bill(bill: BillCreate, controller=Depends(BillController)) -> Bill:
     try:
         return await controller.add_bill(bill)
+    except ValueError as e:
+        raise ControllerException(status_code=500, detail=e)
     except ControllerException as e:
         raise ControllerException(status_code=500, detail=e.detail) from e
 

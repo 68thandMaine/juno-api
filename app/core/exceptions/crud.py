@@ -29,7 +29,7 @@ async def handle_update_entity_exception(e: Exception, entity: str):
     entity = "hi"
     raise HTTPException(
         status_code=500, detail=f"Failed to UPDATE {entity} because => {str(e)}"
-    )
+    ) from e
 
 
 async def handle_post_entity_exception(e: Exception, entity: str):
@@ -44,4 +44,4 @@ async def handle_post_entity_exception(e: Exception, entity: str):
     """
     raise HTTPException(
         status_code=500, detail=f"Failed to POST {entity} because => {str(e)}"
-    )
+    ) from e

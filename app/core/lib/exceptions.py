@@ -1,7 +1,5 @@
 from sqlalchemy.orm.exc import NoResultFound
 
-_ = NoResultFound
-
 
 class ServiceException(Exception):
     """

@@ -4,6 +4,7 @@ from unittest.mock import MagicMock
 import pytest
 from httpx import AsyncClient
 
+from app.core.lib.constants import INCORRECT_DATE
 from app.core.lib.exceptions import ControllerException
 from app.tests.fixtures.setup_fake_bill import setup_fake_bill
 
@@ -27,7 +28,7 @@ async def test_add_bill_returns_200_upon_successful_completion(
     [
         (
             {"due_date": "DATE"},
-            ("ControllerException", "Invalid isoformat string: 'DATE'"),
+            ("ControllerException", INCORRECT_DATE),
         )
     ],
 )

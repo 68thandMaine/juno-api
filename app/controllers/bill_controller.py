@@ -1,5 +1,6 @@
 from uuid import UUID
 
+from pydantic_core import ValidationError
 from sqlalchemy.exc import IntegrityError
 
 from app.core.exceptions.controller import (
@@ -59,8 +60,9 @@ class BillController:
                 paid=data.paid,
                 auto_pay=data.auto_pay,
             )
+
         except ValueError as e:
-            await handle_value_error_in_service(e)
+            handle_value_error_in_service(e)
         except Exception as e:
             handle_generic_exception(e, "_create_bill")
 
@@ -84,7 +86,7 @@ class BillController:
             if category and not await self.category_service.get_one(category):
                 raise ValueError("Category does not exist")
 
-            bill = self._create_bill(new_bill)
+            bill = await self._create_bill(new_bill)
             await self.bill_service.create(bill)
 
             recurring = getattr(new_bill, "recurring", "")
@@ -94,17 +96,17 @@ class BillController:
                     bill, getattr(new_bill, "recurrence_interval")
                 )
 
-        except (ValueError, IntegrityError, ServiceException) as e:
-            msg = e
-            if isinstance(e, IntegrityError):
-                msg = str(e.orig)
-                raise ControllerException(detail=msg) from e
+        except (
+            ValueError,
+            ServiceException,
+            ControllerException,
+        ) as e:
 
             if isinstance(e, ValueError):
-                await handle_value_error_in_service(msg)
+                await handle_value_error_in_service(e)
 
             if isinstance(e, ServiceException):
-                await handle_value_error_in_service(msg)
+                await handle_value_error_in_service(e)
 
         return bill
 
@@ -128,7 +130,7 @@ class BillController:
             await handle_error_in_service(e, "bill_service.get")
         return found_bill
 
-    async def update_bill(self, bill: BillUpdate) -> Bill:
+    async def update_bill(self, bill: Bill) -> Bill:
         """
         Updates a bill
 
@@ -138,7 +140,6 @@ class BillController:
         Can be used to delete/archive bills
         """
         bill = Bill(**bill.model_dump())
-        bill.id = UUID(bill.id).hex
         db_bill = await self.bill_service.get_one(bill.id)
 
         if not db_bill:
@@ -148,7 +149,7 @@ class BillController:
             setattr(db_bill, key, update_value)
 
         try:
-            updated_bill = await self.bill_service.put(UUID(db_bill.id), db_bill)
+            updated_bill = await self.bill_service.put(db_bill.id, db_bill)
         except Exception as e:
             await handle_generic_exception(e, "update bill")
         return updated_bill

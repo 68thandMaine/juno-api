@@ -51,5 +51,6 @@ async def get_session():
     try:
         async with async_session as session:
             yield session
+        await async_session.close()
     finally:
         await async_session.close()

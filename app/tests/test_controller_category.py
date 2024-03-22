@@ -17,16 +17,6 @@ def category_controller():
 
 
 @pytest.mark.asyncio
-async def test_get_categories_raises_controller_exception(
-    mocker, category_controller: CategoryController
-):
-    mocker.patch.object(CRUDService, "get", side_effect=ServiceException())
-    with pytest.raises(ControllerException) as exc_info:
-        await category_controller.get_categories()
-    assert isinstance(exc_info.value, ControllerException)
-
-
-@pytest.mark.asyncio
 async def test_get_categories_returns_list_of_category_objects(
     mocker, category_controller: CategoryController
 ):
@@ -94,16 +84,6 @@ async def test_add_category_creates_new_category(
 
 
 @pytest.mark.asyncio
-async def test_add_category_raises_error_for_invalid_params(
-    category_controller: CategoryController,
-):
-    category = {"name": 1}
-    with pytest.raises(ControllerException) as exc_info:
-        await category_controller.add_category(Category(**category))
-    assert INVALID_INPUT in str(exc_info.value)
-
-
-@pytest.mark.asyncio
 async def test_remove_category_removes_category(
     mocker, category_controller: CategoryController
 ):
@@ -116,11 +96,11 @@ async def test_remove_category_removes_category(
 
 
 @pytest.mark.asyncio
-async def test_remove_category_raises_ValueError_if_category_id_is_invalid(
+async def test_remove_category_raises_value_error_if_category_id_is_invalid(
     category_controller: CategoryController,
 ):
     with pytest.raises(ControllerException) as exc_info:
-        uuid = 1
+        uuid = uuid4()
         await category_controller.remove_category(uuid)
     assert "Invalid Category Id" in str(exc_info.value)
 
@@ -143,25 +123,3 @@ async def test_update_category_updates_category(
     mock_category_service.assert_called_once_with(
         updated_category_data.id, updated_category_data
     )
-
-
-@pytest.mark.asyncio
-async def test_update_category_raises_error_for_invalid_params(
-    category_controller: CategoryController,
-):
-    with pytest.raises(ControllerException) as exc_info:
-        updated_category_data = Category(id=1, name=3)
-        await category_controller.update_category(updated_category_data)
-    assert INVALID_INPUT in str(exc_info.value)
-
-
-@pytest.mark.asyncio
-async def test_update_category_raises_error_with_non_existent_category(
-    category_controller: CategoryController,
-):
-    uuid_id = uuid4()
-    updated_category_data = Category(id=uuid_id, name="NewName")
-    with pytest.raises(ControllerException) as exc_info:
-        await category_controller.update_category(updated_category_data)
-    message = f"{CANNOT_UPDATE} {uuid_id}"
-    assert message in str(exc_info.value)

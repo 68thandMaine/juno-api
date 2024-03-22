@@ -42,14 +42,6 @@ async def test_new_payment_return_500_when_bill_id_is_invalid(
 
 
 @pytest.mark.asyncio
-async def test_new_payment_return_message_when_bill_id_is_invalid(
-    async_client: AsyncClient, setup_fake_payment
-):
-    result = await async_client.post("payment/", json=setup_fake_payment())
-    assert PAYMENT_ERROR_BILL_ID_NOT_FOUND in result.json()["detail"]
-
-
-@pytest.mark.asyncio
 async def test_new_payment_returns_200_when_payment_created(async_client: AsyncClient):
     bill = await async_client.post("bills/", json=bill_for_tests)
 

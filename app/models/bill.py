@@ -28,7 +28,10 @@ class BillBase(CamelCaseModel):
 
 class BillCreate(BillBase):
     """
-    Object sent in API requests that maps that maps to two tables.
+    Bill sent from the client.
+
+    Notable differences between this and Billbase is that
+    the due_date is a str instead of a python date.
     """
 
     due_date: str  # type: ignore

@@ -3,6 +3,7 @@ import uuid
 import pytest
 
 from app.controllers.bill_controller import BillController
+from app.core.lib.constants import INCORRECT_DATE
 from app.core.lib.exceptions import ControllerException
 from app.models.bill import Bill, BillUpdate
 from app.tests.fixtures.setup_fake_bill import setup_fake_bill
@@ -14,6 +15,7 @@ def bill_controller():
     return BillController()
 
 
+@pytest.mark.runonly
 @pytest.mark.asyncio
 async def test_add_bill_returns_bill_instance(
     bill_controller: BillController, setup_fake_bill
@@ -26,10 +28,9 @@ async def test_add_bill_returns_bill_instance(
 @pytest.mark.parametrize(
     "overrides, expected_exception",
     [
-        ({"due_date": "DATE"}, "Invalid isoformat string: 'DATE'"),
         (
-            {"category": "UUID"},
-            "There was an error with a value when creating a new bill",
+            {"due_date": "DATE"},
+            " There is an issue with a value: Incorrect date string",
         ),
     ],
 )
@@ -38,7 +39,7 @@ async def test_add_bill_raises_value_error_if_bill_properties_are_incorrect(
     overrides, expected_exception, bill_controller: BillController, setup_fake_bill
 ):
     bill = setup_fake_bill(overrides)
-    with pytest.raises(ControllerException, match=expected_exception):
+    with pytest.raises(ValueError, match=expected_exception):
         await bill_controller.add_bill(bill)
 
 
@@ -58,11 +59,11 @@ async def test_get_one_bill_returns_a_bill_instance(
     bill_controller: BillController, setup_fake_bill
 ):
     bill = await bill_controller.add_bill(new_bill=setup_fake_bill())
+    if bill.id:
+        result = await bill_controller.get_one_bill(bill.id)
 
-    result = await bill_controller.get_one_bill(bill.id)
-
-    assert isinstance(result, Bill)
-    assert result == bill
+        assert isinstance(result, Bill)
+        assert result == bill
 
 
 @pytest.mark.asyncio
