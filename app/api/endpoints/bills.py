@@ -34,6 +34,7 @@ async def get_bills(controller=Depends(BillController)) -> list[Bill]:
 )
 async def add_bill(bill: BillCreate, controller=Depends(BillController)) -> Bill:
     try:
+        print(bill.due_date)
         return await controller.add_bill(bill)
     except ValueError as e:
         raise ControllerException(status_code=500, detail=e)

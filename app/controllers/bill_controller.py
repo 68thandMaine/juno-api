@@ -47,7 +47,7 @@ class BillController:
         except Exception as e:
             handle_generic_exception(e, "add recurring bill")
 
-    async def _create_bill(self, data: BillCreate) -> Bill:
+    async def _create_bill(self, data: BillCreate) -> BillCreate:
         try:
             if isinstance(data, dict):
                 data = BillCreate(**data)
@@ -87,6 +87,7 @@ class BillController:
                 raise ValueError("Category does not exist")
 
             bill = await self._create_bill(new_bill)
+            print(bill)
             await self.bill_service.create(bill)
 
             recurring = getattr(new_bill, "recurring", "")
