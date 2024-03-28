@@ -3,7 +3,7 @@ from uuid import UUID, uuid4
 from pydantic import BaseModel
 from sqlmodel import Field, SQLModel
 
-from app.lib.utils.str_utils import camel_case
+from app.core.lib.utils.str_utils import camel_case
 
 
 class CamelCaseModel(BaseModel):

@@ -6,7 +6,7 @@ from uuid import UUID
 
 from sqlmodel import Field
 
-from app.models.common import IdBase
+from app.models.common import CamelCaseModel, IdBase
 
 
 @dataclass
@@ -30,9 +30,15 @@ class RecurringBill(IdBase, table=True):
     bill_id: Optional[UUID] = Field(default=None, foreign_key="bill.id")
 
 
+@dataclass
 class Category(IdBase, table=True):
     """
     Category represents a group a bill could be classified under.
     """
 
+    name: str
+
+
+class CategoryInput(CamelCaseModel):
+    id: str
     name: str

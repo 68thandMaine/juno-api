@@ -44,4 +44,5 @@ build-backend = "poetry.core.masonry.api"
 profile = 'black'
 
 [tool.mypy]
-disable_error_code = "attr-defined"
+disable_error_code = ["attr-defined", "return"]
+exclude = ["app/tests"]

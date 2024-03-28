@@ -13,7 +13,10 @@ from app.main import app
 
 @pytest.fixture(scope="session")
 def event_loop():
-    loop = asyncio.get_event_loop_policy().new_event_loop()
+    try:
+        loop = asyncio.get_running_loop()
+    except RuntimeError:
+        loop = asyncio.new_event_loop()
     yield loop
     loop.close()
 
@@ -24,13 +27,13 @@ async def async_client():
         yield client
 
 
-@pytest_asyncio.fixture(scope="function")
+@pytest_asyncio.fixture()
 async def async_session() -> AsyncGenerator:
     return get_session()
 
 
 @pytest.fixture(scope="session", autouse=True)
-def cleanup_test_database(request):
+def cleanup_test_database():
     connection = psycopg2.connect(
         dbname="juno_db_test",
         user=settings.db_username,

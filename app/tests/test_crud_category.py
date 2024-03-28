@@ -66,5 +66,6 @@ async def test_update_category_updates_the_category(async_client: AsyncClient):
     update_response = await async_client.put(
         f"category/{db_category_id}", json=db_category
     )
+
     updated_category = update_response.json()
     assert updated_category["name"] == UPDATED_NAME

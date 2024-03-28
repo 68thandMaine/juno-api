@@ -1,4 +1,4 @@
-﻿name,amount,category,due_date,status
+﻿name,amount,category,due_date,paid
 verizon,145,utility,8/9/23 00:17,0
 rent,1500,housing,8/9/23 00:17,0
 heating,15.23,housing,8/9/23 00:17,0

@@ -1,49 +1,52 @@
-from uuid import UUID
-
 from fastapi import APIRouter, Depends
 
-from app.api.dependencies import get_bill_crud, get_recurring_bill_crud
-from app.lib.utils.time import convert_str_to_datetime
-from app.models import Bill, BillCreate, RecurringBill
+from app.controllers.bill_controller import BillController
+from app.core.exceptions.crud import (
+    handle_get_entity_exception,
+    handle_update_entity_exception,
+)
+from app.core.lib.exceptions import ControllerException
+from app.models import Bill, BillCreate, BillUpdate
 
 router = APIRouter(prefix="/bills")
 
 
-@router.get("/", operation_id="get_bills", response_model=list)
-async def get_bills(bill_crud=Depends(get_bill_crud)):
-    bills = await bill_crud.get()
-    return bills
-
-
-@router.post("/", operation_id="add_bill", response_model=Bill)
-async def add_bill(
-    bill: BillCreate,
-    bill_crud=Depends(get_bill_crud),
-    recurring_bill_crud=Depends(get_recurring_bill_crud),
-):
+@router.get(
+    "/",
+    operation_id="get_bills",
+    response_model=list[Bill],
+    summary="Get a list of bills",
+    description="Retrieve a list of bills from the database.",
+)
+async def get_bills(controller=Depends(BillController)) -> list[Bill]:
     try:
-        new_bill = Bill(
-            name=bill.name,
-            amount=bill.amount,
-            due_date=convert_str_to_datetime(bill.due_date),
-            category=bill.category,
-            status=bill.status,
-        )
-        await bill_crud.create(new_bill)
-
-        if bill.recurring and new_bill.id and bill.recurrence_interval:
-            recurring_bill = RecurringBill(
-                bill_id=new_bill.id,
-                recurrence_interval=bill.recurrence_interval,
-            )
-            recurring_bill_crud.create(recurring_bill)
-
-        return new_bill
-    except Exception as e:
-        raise AttributeError(e) from e
+        return await controller.get_bills()
+    except ControllerException as e:
+        await handle_get_entity_exception(e, "bills")
 
 
-@router.put("/update/{bill_id}", operation_id="update_bill")
-async def update_bill(bill_id: str, bill: Bill, bill_crud=Depends(get_bill_crud)):
-    updated_bill = await bill_crud.put(bill_id, bill)
-    return updated_bill
+@router.post(
+    "/",
+    operation_id="add_bill",
+    response_model=Bill,
+    summary="Add a new bill",
+    description="Create a new bill record in the system.",
+)
+async def add_bill(bill: BillCreate, controller=Depends(BillController)) -> Bill:
+    try:
+        print(bill.due_date)
+        return await controller.add_bill(bill)
+    except ValueError as e:
+        raise ControllerException(status_code=500, detail=e)
+    except ControllerException as e:
+        raise ControllerException(status_code=500, detail=e.detail) from e
+
+
+@router.put("/update/{bill_id}", operation_id="update_bill", response_model=Bill)
+async def update_bill(bill: BillUpdate, controller=Depends(BillController)) -> Bill:
+    try:
+        return await controller.update_bill(bill)
+    except ControllerException as e:
+        await handle_update_entity_exception(e, "bill")
+    except ValueError as e:
+        await handle_update_entity_exception(e, "bill")
